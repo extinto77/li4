@@ -2,6 +2,7 @@ package src.DataBase;
 
 import src.Avaliacao;
 import src.Comida;
+import src.Exceptions.BDFailedConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,7 +36,7 @@ public class ComidaDAO {
         return c;
     }
 
-    public int addComida(Comida c){
+    public int addComida(Comida c) throws BDFailedConnection {
         PreparedStatement ps = codLine("Insert into comida(id,vegetariano,nome) values (?,?,?)");
         if(ps != null){
             try {
@@ -49,7 +50,7 @@ public class ComidaDAO {
             }
             return 1; //Sucesso ao adiconar a Avaliação
         }
-        return -1; //Impossível fazer ligação com a base de dados
+        throw new BDFailedConnection(); //Impossível fazer ligação com a base de dados
     }
 
 

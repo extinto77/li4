@@ -1,15 +1,12 @@
 package src.DataBase;
 
 import src.Avaliacao;
+import src.Exceptions.BDFailedConnection;
+import src.Exceptions.InvalidFormat;
 import src.Restaurante;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.sql.*;
+import java.util.*;
 
 public class RestauranteDAO {
     private final Connection con;
@@ -18,6 +15,7 @@ public class RestauranteDAO {
         this.con = con;
     }
 
+
     private PreparedStatement codLine(String str){
         try {
             return this.con.prepareStatement(str);
@@ -25,6 +23,21 @@ public class RestauranteDAO {
         catch (SQLException e){
             return null;
         }
+    }
+
+    private float toNum(String preco) throws InvalidFormat { //"XXX,XX€"
+        String[] nums = preco.split(",");
+        int dec, in;
+        if(nums.length == 2){
+            in = Integer.parseInt(nums[0]);
+            String[]decs = nums[1].split("€");
+            if (decs.length==1 && decs[0].length()==2){
+                dec = Integer.parseInt(decs[0]);
+            }
+            else throw new InvalidFormat();
+            return (float) (in+(dec / 100.0));
+        }
+        else throw new InvalidFormat();
     }
 
     private Restaurante fromResultSet2Rest(ResultSet rs){
@@ -44,7 +57,7 @@ public class RestauranteDAO {
         return r;
     }
 
-    public int addRestaurante(Restaurante r){
+    public int addRestaurante(Restaurante r) throws BDFailedConnection {
         PreparedStatement ps = codLine("Insert into restaurante(paisOrigem,localidade,rua,gps,preco,nome,telefone,id) values (?,?,?,?,?,?,?,?)");
         if(ps != null){
             try {
@@ -64,10 +77,10 @@ public class RestauranteDAO {
             }
             return 1; //Sucesso ao adiconar a Avaliação
         }
-        return -1; //Impossível fazer ligação com a base de dados
+        throw new BDFailedConnection(); //Impossível fazer ligação com a base de dados
     }
 
-    Restaurante getByIdRestaurante(String id){
+    Restaurante getByIdRestaurante(String id) throws BDFailedConnection {
         PreparedStatement ps = codLine("SELECT * FROM restaurante WHERE id="+id); // ver se é "... 'id'=" e na de baixo também
         if(ps != null){
             try {
@@ -81,18 +94,20 @@ public class RestauranteDAO {
                 return null;
             }
         }
-        return null;
+        throw new BDFailedConnection();
     }
 
-    public List<Restaurante> getRestaurantesByNacionalidade(String nacionalidade) {
-        PreparedStatement ps = codLine("SELECT * FROM avaliacao WHERE nacionalidade=" + nacionalidade); // rever
+    public List<Restaurante> getRestaurantesByNacionalidade(String nacionalidade) throws BDFailedConnection {
+        PreparedStatement ps = codLine("SELECT * FROM restaurante WHERE nacionalidade=" + nacionalidade); // rever
 
         List<Restaurante> list = new ArrayList<>();
         if (ps != null) {
             try {
                 ResultSet rs = ps.executeQuery();
+                String lower_nacionalidade = nacionalidade.toLowerCase();
                 while (rs.next()) {
                     Restaurante r = fromResultSet2Rest(rs);
+                    if (r!=null && r.getPaisOrigem().toLowerCase().equals(lower_nacionalidade))
                     list.add(r);
                 }
             }catch (SQLException e) {
@@ -100,26 +115,60 @@ public class RestauranteDAO {
             }
             return list;
         }
-        return null;
+        throw new BDFailedConnection();
     }
 
-    public List<Restaurante> getAllRestaurantes() {
-        PreparedStatement ps = codLine("SELECT * FROM avaliacao");
+    public List<Restaurante> getAllRestaurantesNome(String nome) throws BDFailedConnection {
+        PreparedStatement ps = codLine("SELECT * FROM restaurante");
 
         List<Restaurante> list = new ArrayList<>();
         if (ps != null) {
             try {
                 ResultSet rs = ps.executeQuery();
+                String lower_nome = nome.toLowerCase();
                 while (rs.next()) {
                     Restaurante r = fromResultSet2Rest(rs);
-                    list.add(r);
+                    if(r != null){
+                        String resNome = r.getNome().toLowerCase();
+                        if(lower_nome.matches(resNome+"(.*)") ||
+                            lower_nome.matches("(.*)"+ resNome+"(.*)") ||
+                            lower_nome.matches("(.*)" + resNome))
+                                list.add(r);
+                    }
                 }
             }catch (SQLException e) {
                 return null;
             }
             return list;
         }
-        return null;
+        throw new BDFailedConnection();
+    }
+
+    public List<Restaurante> getRestaurantesPreco(int min, int max) throws BDFailedConnection {
+        PreparedStatement ps = codLine("SELECT * FROM restaurante");
+
+        List<Restaurante> list = new ArrayList<>();
+        if (ps != null) {
+            try {
+                ResultSet rs = ps.executeQuery();
+
+                while (rs.next()) {
+                    Restaurante r = fromResultSet2Rest(rs);
+                    if(r != null){
+                        try{
+                            float preco = toNum(r.getPreco());
+                            if(min<=preco && preco<=max)
+                                list.add(r);
+                        }
+                        catch (InvalidFormat ignored){};
+                    }
+                }
+            }catch (SQLException e) {
+                return null;
+            }
+            return list;
+        }
+        throw new BDFailedConnection();
     }
     /* RANDOM
     int size = list.size();
@@ -128,7 +177,55 @@ public class RestauranteDAO {
     return list.get(index);
     */
 
+    public List<Restaurante> getAllRestaurantes() throws BDFailedConnection {
+        PreparedStatement ps = codLine("SELECT * FROM restaurante");
 
+        List<Restaurante> list = new ArrayList<>();
+        if (ps != null) {
+            try {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    Restaurante r = fromResultSet2Rest(rs);
+                    if (r!=null)
+                        list.add(r);
+                }
+            }catch (SQLException e) {
+                return null;
+            }
+            return list;
+        }
+        throw new BDFailedConnection();
+    }
+
+    public Restaurante getRandomRestaurante() throws BDFailedConnection {
+        List<Restaurante> list = getAllRestaurantes();
+        int size = list.size();
+        Random rand = new Random();
+        int index = rand.nextInt(size);
+        return list.get(index);
+    }
+
+
+    public static void main(String[] args) throws InvalidFormat {
+        String url = "jdbc:mysql://localhost:3306/li4";
+        String user = "besta";
+        String password = "bestasmei1920";
+
+        try {
+            Connection con = DriverManager.getConnection(url, user, password);
+            RestauranteDAO resdao = new RestauranteDAO(con);
+            System.out.println(resdao.toNum("20,34€"));
+            System.out.println(resdao.toNum("020,34€"));
+            System.out.println(resdao.toNum("020,04€"));
+            //System.out.println(resdao.toNum("020,3€"));
+            System.out.println(resdao.toNum("020,30€"));
+            // passar este con para a controler
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+    }
 
 
 

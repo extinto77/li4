@@ -1,6 +1,9 @@
 package src.DataBase;
 
 import src.Avaliacao;
+import src.Exceptions.BDFailedConnection;
+import src.Exceptions.InvalidFormat;
+import src.Exceptions.NoMatch;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,7 +43,7 @@ public class AvaliacaoDAO {
         return a;
     }
 
-    public int addAvaliacao(Avaliacao a){
+    public int addAvaliacao(Avaliacao a) throws BDFailedConnection {
         PreparedStatement ps = codLine("Insert into avaliacao(id,classificacao,data,texto,idRestaurante,usernameCliente) values (?,?,?,?,?,?)");
         if(ps != null){
             try {
@@ -57,10 +60,10 @@ public class AvaliacaoDAO {
             }
             return 1; //Sucesso ao adiconar a Avaliação
         }
-        return -1; //Impossível fazer ligação com a base de dados
+        throw new BDFailedConnection(); //Impossível fazer ligação com a base de dados
     }
 
-    Avaliacao getByIdAvaliacao(String id){
+    Avaliacao getByIdAvaliacao(String id) throws BDFailedConnection {
         PreparedStatement ps = codLine("SELECT * FROM avaliacao WHERE id="+id); // ver se é "... 'id'=" e na de baixo também
         if(ps != null){
             try {
@@ -68,17 +71,17 @@ public class AvaliacaoDAO {
                 if(rs.next()){
                     return fromResultSet2Aval(rs);
                 }
-                else return null;
+                else throw new NoMatch();
             }
-            catch (SQLException e){
+            catch (SQLException | NoMatch e){
                 return null;
             }
         }
-        return null;
+        throw new BDFailedConnection();
     }
 
-    public List<Avaliacao> getAvaliacoes(String flag, String id) {
-        if (!(flag.equals("restaurante") || flag.equals("username"))) return null;
+    public List<Avaliacao> getAvaliacoes(String flag, String id) throws InvalidFormat, BDFailedConnection {
+        if (!(flag.equals("restaurante") || flag.equals("username"))) throw new InvalidFormat();
         PreparedStatement ps = codLine("SELECT * FROM avaliacao WHERE " + flag + "=" + id);
         List<Avaliacao> list = new ArrayList<>();
         if (ps != null) {
@@ -93,7 +96,7 @@ public class AvaliacaoDAO {
             }
             return list;
         }
-        return null;
+        throw new BDFailedConnection();
     }
 
 

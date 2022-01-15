@@ -2,6 +2,7 @@ package src.DataBase;
 
 import src.Avaliacao;
 import src.Cliente;
+import src.Exceptions.BDFailedConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,7 +42,7 @@ public class ClienteDAO {
         return c;
     }
 
-    public int addCliente(Cliente c){
+    public int addCliente(Cliente c) throws BDFailedConnection {
         PreparedStatement ps = codLine("Insert into cliente(username,dataNascimento,nome,email,telemovel,password) values (?,?,?,?,?,?)");
         if(ps != null){
             try {
@@ -57,10 +58,10 @@ public class ClienteDAO {
             }
             return 1; //Sucesso ao adiconar a Avaliação
         }
-        return -1; //Impossível fazer ligação com a base de dados
+        throw new BDFailedConnection(); //Impossível fazer ligação com a base de dados
     }
 
-    Cliente getByUsername(String username){
+    Cliente getByUsername(String username) throws BDFailedConnection {
         PreparedStatement ps = codLine("SELECT * FROM cliente WHERE username="+username); // ver se é "... 'username'=" e na de baixo também
         if(ps != null){
             try {
@@ -74,7 +75,7 @@ public class ClienteDAO {
                 return null;
             }
         }
-        return null;
+        throw new BDFailedConnection();
     }
 
 }
