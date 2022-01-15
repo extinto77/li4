@@ -1,8 +1,7 @@
 package src.DataBase;
 
-import src.Avaliacao;
 import src.Comida;
-import src.Exceptions.BDFailedConnection;
+import src.Exceptions.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,28 +15,20 @@ public class ComidaDAO {
         this.con = con;
     }
 
-    private PreparedStatement codLine(String str) {
-        try {
-            return this.con.prepareStatement(str);
-        } catch (SQLException e) {
-            return null;
-        }
-    }
-
     private Comida fromResultSet2Com(ResultSet rs){
         Comida c = new Comida();
         try {
             c.setId(rs.getInt("id"));
             c.setVegetariano(rs.getShort("vegetariano"));
             c.setNome(rs.getString("nome"));
-        } catch (SQLException e) {
+        } catch (SQLException | MaxSizeOvertake | InvalidFormat e) {
             return null;
         }
         return c;
     }
 
-    public int addComida(Comida c) throws BDFailedConnection {
-        PreparedStatement ps = codLine("Insert into comida(id,vegetariano,nome) values (?,?,?)");
+    public int addComida(Comida c) throws BDFailedConnection, AddingError {
+        PreparedStatement ps = JDBC.codLine(this.con, "Insert into comida(id,vegetariano,nome) values (?,?,?)");
         if(ps != null){
             try {
                 ps.setInt(1,c.getId());
@@ -45,12 +36,28 @@ public class ComidaDAO {
                 ps.setString(3,c.getNome());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
-                return 0; //Impossível adicionar à base de dados
+                throw new AddingError(); //Impossível adicionar à base de dados
             }
             return 1; //Sucesso ao adiconar a Avaliação
         }
         throw new BDFailedConnection(); //Impossível fazer ligação com a base de dados
+    }
+
+    Comida getById(int id) throws BDFailedConnection, NoMatch {
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM comida WHERE id="+id); // ver se é "... 'username'=" e na de baixo também
+        if(ps != null){
+            try {
+                ResultSet rs = ps.executeQuery();
+                if(rs.next()){
+                    return fromResultSet2Com(rs);
+                }
+                else throw new NoMatch();
+            }
+            catch (SQLException e){
+                return null;
+            }
+        }
+        throw new BDFailedConnection();
     }
 
 

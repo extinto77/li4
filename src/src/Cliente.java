@@ -1,5 +1,7 @@
 package src;
 
+import src.Exceptions.MaxSizeOvertake;
+
 import java.util.Date;
 
 public class Cliente {
@@ -10,15 +12,24 @@ public class Cliente {
     private String telemovel;
     private String password;
 
-    public Cliente(){
+    public Cliente(){}
 
+    public Cliente(String username, Date dataNascimento, String nome, String email, String telemovel, String password) throws MaxSizeOvertake{
+        setUsername(username);
+        setNome(nome);
+        setEmail(email);
+        setTelemovel(telemovel);
+        setPassword(password);
+        this.dataNascimento = dataNascimento;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(String username) throws MaxSizeOvertake {
+        int MAX_SIZE = 20;
+        if (username.length()> MAX_SIZE) throw new MaxSizeOvertake();
         this.username = username;
     }
 
@@ -34,7 +45,9 @@ public class Cliente {
         return nome;
     }
 
-    public void setNome(String nome) {
+    public void setNome(String nome) throws MaxSizeOvertake {
+        int MAX_SIZE = 90;
+        if (nome.length()> MAX_SIZE) throw new MaxSizeOvertake();
         this.nome = nome;
     }
 
@@ -42,7 +55,9 @@ public class Cliente {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(String email) throws MaxSizeOvertake {
+        int MAX_SIZE = 100;
+        if (email.length()> MAX_SIZE) throw new MaxSizeOvertake();
         this.email = email;
     }
 
@@ -50,7 +65,9 @@ public class Cliente {
         return telemovel;
     }
 
-    public void setTelemovel(String telemovel) {
+    public void setTelemovel(String telemovel) throws MaxSizeOvertake {
+        int MAX_SIZE = 9;
+        if (telemovel.length()> MAX_SIZE) throw new MaxSizeOvertake();
         this.telemovel = telemovel;
     }
 
@@ -58,7 +75,9 @@ public class Cliente {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password) throws MaxSizeOvertake {
+        int MAX_SIZE = 25;
+        if (password.length()> MAX_SIZE) throw new MaxSizeOvertake();
         this.password = password;
     }
 }

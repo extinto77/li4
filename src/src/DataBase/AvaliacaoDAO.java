@@ -1,9 +1,8 @@
 package src.DataBase;
 
 import src.Avaliacao;
-import src.Exceptions.BDFailedConnection;
-import src.Exceptions.InvalidFormat;
-import src.Exceptions.NoMatch;
+import src.Exceptions.*;
+import src.DataBase.JDBC;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,15 +18,6 @@ public class AvaliacaoDAO {
         this.con = con;
     }
 
-    private PreparedStatement codLine(String str){
-        try {
-            return this.con.prepareStatement(str);
-        }
-        catch (SQLException e){
-            return null;
-        }
-    }
-
     private Avaliacao fromResultSet2Aval(ResultSet rs){
         Avaliacao a = new Avaliacao();
         try {
@@ -37,14 +27,14 @@ public class AvaliacaoDAO {
             a.setTexto(rs.getString("texto"));
             a.setIdRestaurante(rs.getString("idRestaurante"));
             a.setUsernameCliente(rs.getString("usernameCliente"));
-        } catch (SQLException e) {
+        } catch (SQLException | MaxSizeOvertake e) {
             return null;
         }
         return a;
     }
 
-    public int addAvaliacao(Avaliacao a) throws BDFailedConnection {
-        PreparedStatement ps = codLine("Insert into avaliacao(id,classificacao,data,texto,idRestaurante,usernameCliente) values (?,?,?,?,?,?)");
+    public int addAvaliacao(Avaliacao a) throws BDFailedConnection, AddingError {
+        PreparedStatement ps = JDBC.codLine(this.con, "Insert into avaliacao(id,classificacao,data,texto,idRestaurante,usernameCliente) values (?,?,?,?,?,?)");
         if(ps != null){
             try {
                 ps.setString(1,a.getId());
@@ -55,8 +45,7 @@ public class AvaliacaoDAO {
                 ps.setString(6,a.getUsernameCliente());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
-                return 0; //Impossível adicionar à base de dados
+                throw new AddingError(); //Impossível adicionar à base de dados
             }
             return 1; //Sucesso ao adiconar a Avaliação
         }
@@ -64,7 +53,7 @@ public class AvaliacaoDAO {
     }
 
     Avaliacao getByIdAvaliacao(String id) throws BDFailedConnection {
-        PreparedStatement ps = codLine("SELECT * FROM avaliacao WHERE id="+id); // ver se é "... 'id'=" e na de baixo também
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM avaliacao WHERE id="+id); // ver se é "... 'id'=" e na de baixo também
         if(ps != null){
             try {
                 ResultSet rs = ps.executeQuery();
@@ -82,7 +71,7 @@ public class AvaliacaoDAO {
 
     public List<Avaliacao> getAvaliacoes(String flag, String id) throws InvalidFormat, BDFailedConnection {
         if (!(flag.equals("restaurante") || flag.equals("username"))) throw new InvalidFormat();
-        PreparedStatement ps = codLine("SELECT * FROM avaliacao WHERE " + flag + "=" + id);
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM avaliacao WHERE " + flag + "=" + id);
         List<Avaliacao> list = new ArrayList<>();
         if (ps != null) {
             try {

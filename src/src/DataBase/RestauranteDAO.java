@@ -1,8 +1,6 @@
 package src.DataBase;
 
-import src.Avaliacao;
-import src.Exceptions.BDFailedConnection;
-import src.Exceptions.InvalidFormat;
+import src.Exceptions.*;
 import src.Restaurante;
 
 import java.sql.*;
@@ -13,16 +11,6 @@ public class RestauranteDAO {
 
     public RestauranteDAO(Connection con){
         this.con = con;
-    }
-
-
-    private PreparedStatement codLine(String str){
-        try {
-            return this.con.prepareStatement(str);
-        }
-        catch (SQLException e){
-            return null;
-        }
     }
 
     private float toNum(String preco) throws InvalidFormat { //"XXX,XX€"
@@ -51,14 +39,14 @@ public class RestauranteDAO {
             r.setNome(rs.getString("nome"));
             r.setTelefone(rs.getString("telefone"));
             r.setId(rs.getString("id"));
-        } catch (SQLException e) {
+        } catch (SQLException | MaxSizeOvertake e) {
             return null;
         }
         return r;
     }
 
-    public int addRestaurante(Restaurante r) throws BDFailedConnection {
-        PreparedStatement ps = codLine("Insert into restaurante(paisOrigem,localidade,rua,gps,preco,nome,telefone,id) values (?,?,?,?,?,?,?,?)");
+    public int addRestaurante(Restaurante r) throws BDFailedConnection, AddingError {
+        PreparedStatement ps = JDBC.codLine(this.con, "Insert into restaurante(paisOrigem,localidade,rua,gps,preco,nome,telefone,id) values (?,?,?,?,?,?,?,?)");
         if(ps != null){
             try {
                 ps.setString(1,r.getPaisOrigem());
@@ -73,7 +61,7 @@ public class RestauranteDAO {
                 ps.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
-                return 0; //Impossível adicionar à base de dados
+                throw new AddingError(); //Impossível adicionar à base de dados
             }
             return 1; //Sucesso ao adiconar a Avaliação
         }
@@ -81,16 +69,16 @@ public class RestauranteDAO {
     }
 
     Restaurante getByIdRestaurante(String id) throws BDFailedConnection {
-        PreparedStatement ps = codLine("SELECT * FROM restaurante WHERE id="+id); // ver se é "... 'id'=" e na de baixo também
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE id="+id); // ver se é "... 'id'=" e na de baixo também
         if(ps != null){
             try {
                 ResultSet rs = ps.executeQuery();
                 if(rs.next()){
                     return fromResultSet2Rest(rs);
                 }
-                else return null;
+                else throw new NoMatch();
             }
-            catch (SQLException e){
+            catch (SQLException | NoMatch e){
                 return null;
             }
         }
@@ -98,7 +86,7 @@ public class RestauranteDAO {
     }
 
     public List<Restaurante> getRestaurantesByNacionalidade(String nacionalidade) throws BDFailedConnection {
-        PreparedStatement ps = codLine("SELECT * FROM restaurante WHERE nacionalidade=" + nacionalidade); // rever
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE nacionalidade=" + nacionalidade); // rever
 
         List<Restaurante> list = new ArrayList<>();
         if (ps != null) {
@@ -119,7 +107,7 @@ public class RestauranteDAO {
     }
 
     public List<Restaurante> getAllRestaurantesNome(String nome) throws BDFailedConnection {
-        PreparedStatement ps = codLine("SELECT * FROM restaurante");
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante");
 
         List<Restaurante> list = new ArrayList<>();
         if (ps != null) {
@@ -145,7 +133,7 @@ public class RestauranteDAO {
     }
 
     public List<Restaurante> getRestaurantesPreco(int min, int max) throws BDFailedConnection {
-        PreparedStatement ps = codLine("SELECT * FROM restaurante");
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante");
 
         List<Restaurante> list = new ArrayList<>();
         if (ps != null) {
@@ -178,7 +166,7 @@ public class RestauranteDAO {
     */
 
     public List<Restaurante> getAllRestaurantes() throws BDFailedConnection {
-        PreparedStatement ps = codLine("SELECT * FROM restaurante");
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante");
 
         List<Restaurante> list = new ArrayList<>();
         if (ps != null) {

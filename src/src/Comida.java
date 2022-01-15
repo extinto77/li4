@@ -1,5 +1,8 @@
 package src;
 
+import src.Exceptions.InvalidFormat;
+import src.Exceptions.MaxSizeOvertake;
+
 public class Comida {
     private int id;
     private short vegetariano;
@@ -7,6 +10,12 @@ public class Comida {
 
     public Comida(){
 
+    }
+
+    public Comida(int id, short vegetariano, String nome) throws MaxSizeOvertake, InvalidFormat {
+        setNome(nome);
+        setId(id);
+        setVegetariano(vegetariano);
     }
 
     public int getId() {
@@ -21,7 +30,9 @@ public class Comida {
         return vegetariano;
     }
 
-    public void setVegetariano(short vegetariano) {
+    public void setVegetariano(short vegetariano) throws InvalidFormat {
+        if (!(vegetariano == (short)0 || vegetariano==(short)1))
+            throw new InvalidFormat();
         this.vegetariano = vegetariano;
     }
 
@@ -29,7 +40,9 @@ public class Comida {
         return nome;
     }
 
-    public void setNome(String nome) {
+    public void setNome(String nome) throws MaxSizeOvertake {
+        int MAX_SIZE = 45;
+        if (nome.length()> MAX_SIZE) throw new MaxSizeOvertake();
         this.nome = nome;
     }
 }
