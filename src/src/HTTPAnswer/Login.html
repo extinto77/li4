@@ -13,25 +13,26 @@
             overflow: hidden;
             background-image: url("https://www.dicasdeviagem.com/wp-content/uploads/2019/01/avenida-liberdade-braga-1200x839.jpg");
             background-position: center;
-            background-attachment: fixed;
             background-repeat: no-repeat;
             background-size: cover;
+            overflow: auto;
             background-color: #cccccc;
+            min-height: 100%;
         }
 
         button {
-            background-color: #4CAF50;
+            background-color: #aaaaaa;
             width: 100%;
-            color: orange;
+            color: rgb(0, 0, 0);
             padding: 15px;
             margin: 10px 0px;
-            border: none;
+            border: 2px solid rgb(0, 0, 0);
             cursor: pointer;
         }
 
         form {
             border: 3px solid #f1f1f1;
-            float: top;
+            height: 100%;
         }
 
         input[type=text],
@@ -56,32 +57,37 @@
         }
 
         .container {
-            position: relative;
             width: 30%;
-            height: 100%;
-            overflow: hidden;
-            background: url("https://cdn.discordapp.com/attachments/918462128103514202/933788594483642368/LI4.png") 0 0 no-repeat;
-            background-size: 50%;
-            background-position: top;
-            padding: 25px;
-            background-color: lightblue;
+            padding: 5%;
+            background-color: rgba(156, 179, 187, 0.7);
+            margin:auto;
+            vertical-align: auto;
+            position: relative;
+            height: auto;
         }
+        
+        img.logo{
+            width: 50%;
+            height: auto;
+            left: 50%;
+            right: 50%;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+
     </style>
 </head>
-
+    <div class="container">
+        <img class="logo" src="https://cdn.discordapp.com/attachments/918462128103514202/933788594483642368/LI4.png">
+        <button type="submit">Login</button>
+        <label>Email : </label>
+        <input type="text" placeholder="Enter Email" name="email" required>
+        <label>Password : </label>
+        <input type="password" placeholder="Enter Password" name="password" required>
+    </div>
 <body>
-    <center>
-        <h1> (A)Typical FOOD </h1>
-    </center>
-    <form>
-        <div class="container">
-            <button type="submit">Login</button>
-            <label>Email : </label>
-            <input type="text" placeholder="Enter Email" name="email" required>
-            <label>Password : </label>
-            <input type="password" placeholder="Enter Password" name="password" required>
-        </div>
-    </form>
+    
 </body>
 
 </html>
