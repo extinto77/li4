@@ -55,23 +55,66 @@ public class HTTP implements Runnable{
         s.close();
     }
 
+    private void sendRegisto(OutputStream clientOutput)throws IOException{
+        File file = new File("src/src/HTTPAnswer/Registo.html");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String msg;
+        clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
+        clientOutput.write("\r\n".getBytes());
+        while((msg = br.readLine()) != null)clientOutput.write(msg.getBytes(StandardCharsets.UTF_8));
+        clientOutput.write("\r\n\r\n".getBytes());
+        clientOutput.flush();
+    }
+
+    private void sendLogin(OutputStream clientOutput)throws IOException{
+        File file = new File("src/src/HTTPAnswer/Login.html");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String msg;
+        clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
+        clientOutput.write("\r\n".getBytes());
+        while((msg = br.readLine()) != null)clientOutput.write(msg.getBytes(StandardCharsets.UTF_8));
+        clientOutput.write("\r\n\r\n".getBytes());
+        clientOutput.flush();
+    }
+
+    private void sendIndex(OutputStream clientOutput)throws IOException{
+        File file = new File("src/src/HTTPAnswer/index.html");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String msg;
+        clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
+        clientOutput.write("\r\n".getBytes());
+        while((msg = br.readLine()) != null)clientOutput.write(msg.getBytes(StandardCharsets.UTF_8));
+        clientOutput.write("\r\n\r\n".getBytes());
+        clientOutput.flush();
+    }
+
     @Override
     public void run() {
         try {
+            Socket clientSocket = ss.accept();
+            OutputStream clientOutput = clientSocket.getOutputStream();
+            BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             while(running){
-                File login = new File("src/src/HTTPAnswer/Registo.html");
-                BufferedReader fw = new BufferedReader(new FileReader(login));
-                String msg;
-                Socket clientSocket = ss.accept();
-                OutputStream clientOutput = clientSocket.getOutputStream();
-                clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
-                clientOutput.write("\r\n".getBytes());
-                while((msg = fw.readLine()) != null)
-                    clientOutput.write(msg.getBytes(StandardCharsets.UTF_8));
-
-                clientOutput.write("\r\n\r\n".getBytes());
-                clientOutput.flush();
-                clientOutput.close();
+                String request = input.readLine();
+                System.out.println(request);
+                String[] requestParam = request.split(" ");
+                switch(requestParam[0]){
+                    case "GET":
+                        switch(requestParam[1]){
+                            case "/":
+                                sendIndex(clientOutput);
+                                break;
+                            case "/registo":
+                                sendRegisto(clientOutput);
+                                break;  
+                            case "/login":  
+                            sendLogin(clientOutput);
+                                break;   
+                        }
+                        break;
+                    default:
+                        running=false;    
+                }
             }
 
         }catch (IOException e){
