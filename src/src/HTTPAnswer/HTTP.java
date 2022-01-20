@@ -59,7 +59,7 @@ public class HTTP implements Runnable{
     public void run() {
         try {
             while(running){
-                File login = new File("src/src/HTTPAnswer/Login.html");
+                File login = new File("src/src/HTTPAnswer/Registo.html");
                 BufferedReader fw = new BufferedReader(new FileReader(login));
                 String msg;
                 Socket clientSocket = ss.accept();
