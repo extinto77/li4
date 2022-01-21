@@ -11,11 +11,11 @@ import java.sql.SQLException;
 public class ClienteDAO {
     private final Connection con;
 
-    public ClienteDAO(Connection con){
+    public ClienteDAO(Connection con) {
         this.con = con;
     }
 
-    private Cliente fromResultSet2Cli(ResultSet rs){
+    private Cliente fromResultSet2Cli(ResultSet rs) {
         Cliente c = new Cliente();
         try {
             c.setUsername(rs.getString("username"));
@@ -31,71 +31,80 @@ public class ClienteDAO {
     }
 
     public int addCliente(Cliente c) throws BDFailedConnection, AddingError {
-        PreparedStatement ps = JDBC.codLine(this.con, "Insert into cliente(username,dataNascimento,nome,email,telemovel,password) values (?,?,?,?,?,?)");
-        if(ps != null){
+        PreparedStatement ps = JDBC.codLine(this.con,
+                "Insert into cliente(username,dataNascimento,nome,email,telemovel,password) values (?,?,?,?,?,?)");
+        if (ps != null) {
             try {
                 ps.setString(1, c.getUsername());
-                ps.setDate(2, new java.sql.Date(c.getDataNascimento().getTime()));//rever
+                ps.setDate(2, new java.sql.Date(c.getDataNascimento().getTime()));// rever
                 ps.setString(3, c.getNome());
                 ps.setString(4, c.getEmail());
                 ps.setString(5, ""+c.getTelemovel());
                 ps.setString(6, c.getPassword());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new AddingError(); //Impossível adicionar à base de dados
+                throw new AddingError(); // Impossível adicionar à base de dados
             }
-            return 1; //Sucesso ao adiconar a Avaliação
+            return 1; // Sucesso ao adiconar a Avaliação
         }
-        throw new BDFailedConnection(); //Impossível fazer ligação com a base de dados
+        throw new BDFailedConnection(); // Impossível fazer ligação com a base de dados
     }
 
-    Cliente getByUsername(String username) throws BDFailedConnection, NoMatch {
-        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM cliente WHERE username='"+username+"'"); // ver se é "... 'username'=" e na de baixo também
-        if(ps != null){
+    public Cliente getByUsername(String username) throws BDFailedConnection, NoMatch {
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM cliente WHERE username='"+username+"'"); // ver se é
+                                                                                                           // "...
+                                                                                                           // 'username'="
+                                                                                                           // e na de
+                                                                                                           // baixo
+                                                                                                           // também
+        if (ps != null) {
             try {
                 ResultSet rs = ps.executeQuery();
-                if(rs.next()){
+                if (rs.next()) {
                     return fromResultSet2Cli(rs);
-                }
-                else throw new NoMatch();
-            }
-            catch (SQLException e){
+                } else
+                    throw new NoMatch();
+            } catch (SQLException e) {
                 return null;
             }
         }
         throw new BDFailedConnection();
     }
 
-    Cliente changeInfo(String username, String newUsername, String nome, String email, String password) throws BDFailedConnection, AddingError {
-        if(newUsername==null && nome==null && email==null && password==null) return null;
-        boolean first=true;
+    public Cliente changeInfo(String username, String newUsername, String nome, String email, String password)
+            throws BDFailedConnection, NoMatch, AddingError {
+        if (newUsername == null && nome == null && email == null && password == null)
+            return null;
+        boolean first = true;
         String command = "UPDATE cliente SET ";
-        if (newUsername!=null){
-            command += ("username = '"+ newUsername +"'");
-            first=false;
+        if (newUsername != null) {
+            command += ("username = '" + newUsername + "'");
+            first = false;
         }
-        if (nome!=null){
-            if(!first) command+=" , ";
-            command += ("nome = '"+ nome +"'");
-            first=false;
+        if (nome != null) {
+            if (!first)
+                command += " , ";
+            command += ("nome = '" + nome + "'");
+            first = false;
         }
-        if (email!=null){
-            if(!first) command+=" , ";
-            command += ("email = "+ email +"'");
-            first=false;
+        if (email != null) {
+            if (!first)
+                command += " , ";
+            command += ("email = '" + email + "'");
+            first = false;
         }
-        if (password!=null){
-            if(!first) command+=" , ";
-            command += ("password = "+password +"'");
+        if (password != null) {
+            if (!first)
+                command += " , ";
+            command += ("password = '" + password + "'");
         }
-        command += " WHERE username = '"+ username +"'";
+        command += " WHERE username = '" + username + "'";
 
         PreparedStatement ps = JDBC.codLine(this.con, command); // ver se é "... 'username'=" e na de baixo também
-        if(ps != null){
+        if (ps != null) {
             try {
                 ps.executeUpdate();
-            }
-            catch (SQLException e){
+            } catch (SQLException e) {
                 throw new AddingError();
             }
         }
@@ -108,11 +117,11 @@ public class ClienteDAO {
             try {
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new AddingError(); //Impossível adicionar à base de dados
+                throw new AddingError(); // Impossível adicionar à base de dados
             }
-            return 1; //Sucesso ao adiconar a Avaliação
+            return 1; // Sucesso ao adiconar a Avaliação
         }
-        throw new BDFailedConnection(); //Impossível fazer ligação com a base de dados
+        throw new BDFailedConnection(); // Impossível fazer ligação com a base de dados
     }
 
 }

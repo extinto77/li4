@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registo</title>
+    <link rel="icon" href="https://i.imgur.com/teflePh.png"
+          type="image/x-icon">
+    <style>
+        Body {
+            font-family: Calibri, Helvetica, sans-serif;
+            overflow: hidden;
+            background-color: white;
+            min-height: 100%;
+        }
+        button {
+            background-color: #cccccc;
+            width: 100%;
+            color: rgb(0, 0, 0);
+            padding: 15px;
+            margin: 10px 0px;
+            border: 2px solid rgb(0, 0, 0);
+            cursor: pointer;
+        }
+        input{
+            width: 100%;
+            margin: 8px 0;
+            padding: 12px 20px;
+            display: inline-block;
+            border: 2px solid rgb(0, 0, 0);
+            box-sizing: border-box;
+            position:relative;
+            height: 20%;
+        }
+
+        button:hover {
+            opacity: 0.7;
+        }
+
+        .container {
+            width: 80%;
+            padding: 3% 5%;
+            background-color: rgba(204, 204, 204, 0.7);
+            margin:auto;
+            vertical-align: auto;
+            position: relative;
+            height: auto;
+            overflow: hidden;
+        }
+
+        .flex-parent {
+            display: flex;
+        }
+        .flex-child {
+            margin: 5px;
+            flex: 1;
+        }
+
+        .borderless{
+            border: none;
+        }
+        img.logo{
+            width: 7%;
+            height: auto;
+            left: 50%;
+            right: 50%;
+            padding-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        img.settings{
+            float: left;
+            width: 30px;
+            height: auto;
+            resize: none;
+            left: 100%;
+            display: block;
+            margin-top: 15px;
+            margin-right: 10px;
+        }
+        .def{
+            display: inline-block;
+            background-size: cover;
+        }
+        .def_text{
+            float: right;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+
+        }
+        /* Hide default HTML checkbox */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        /* The slider */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 14px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+            height: 17px;
+            width: 17px;
+        }
+        .local{
+            position: relative;
+            display: inline-block;
+        }
+        .elimina{
+            border: none;
+            background: none;
+            padding-left: 4px;
+            padding-top: 3px;
+            margin-top: 10px;
+            height: 30px;
+            width: 30px;
+            opacity: 1;
+
+        }
+        .top{
+            width: 80%;
+            vertical-align: auto;
+            position: relative;
+            height: auto;
+            padding: 20px 5%;
+            border: 2px solid black;
+            margin: auto auto 20px;
+        }
+        .user{
+            float: right;
+        }
+        .logout{
+            border: none;
+            background: none;
+            padding-right: 0px;
+            padding-top: 0px;
+            margin-top: -7px;
+            height: 30px;
+            width: 30px;
+            opacity: 1;
+            float: right;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top">
+        <bold>DEFINIÇÕES</bold>
+        <bold class="user">USERNAME
+        <button type="submit" class="logout" >
+            <img src="https://i.imgur.com/MKVEzDH.jpg" height=30px width=30px>
+        </button>
+        </bold>
+
+    </div>
+    <div class="container">
+        <div class="def">
+        <img class="settings" src="https://media.discordapp.net/attachments/898487135739461632/934122246543405216/Prc6GrK.png?width=648&height=646">
+        <div class="def_text">
+            <h2>DEFINIÇÕES</h2>
+        </div>
+        </div>
+        <form class="borderless" method="post">
+        <button type="submit">Editar</button>
+        <div class="flex-parent">
+            <div class="flex-child">
+                <input type="text" placeholder="Nome Completo" name="nome"
+                       oninvalid="this.setCustomValidity('Introduza o seu nome')"
+                       oninput="this.setCustomValidity('')">
+
+                <input type="number" placeholder="Número de telemóvel" name="numero"
+                       oninvalid="this.setCustomValidity('Introduza o seu número de telemóvel')"
+                       oninput="this.setCustomValidity('')"
+                       maxlength="9"
+                       minlength="9">
+
+                <input type="date" placeholder="Data de Nascimento" name="nascimento"
+                       oninvalid="this.setCustomValidity('Introduza a sua data de nascimento')"
+                       oninput="this.setCustomValidity('')">
+            </div>
+            <div class="flex-child">
+                <input type="text" placeholder="Username" name="username"
+                       oninvalid="this.setCustomValidity('Introduza o seu username')"
+                       oninput="this.setCustomValidity('')">
+
+                <input type="email" placeholder="Email" name="email" required
+                       oninvalid="this.setCustomValidity('Introduza o seu email')"
+                       oninput="this.setCustomValidity('')">
+
+                <input type="password" placeholder="Password" name="password" required
+                       oninvalid="this.setCustomValidity('Introduza a sua palavra-passe')"
+                       oninput="this.setCustomValidity('')">
+            </div>
+        </div>
+        </form>
+        <div class="local">
+        <bold class="local_txt">LOCALIZAÇÃO</bold>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div>
+        <bold>ELIMINAR CONTA</bold>
+        <button type = "submit" class="elimina">
+            <img class="lixo" src="https://i.imgur.com/YpcUx5n.png" height=25px width=auto/>
+        </button>
+
+        </div>
+    </div>
+
+
+<img class="logo" src="https://i.imgur.com/teflePh.png">
+</body>
+</html>
