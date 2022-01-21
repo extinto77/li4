@@ -1,73 +1,95 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Login Page </title>
-  <style>
-    Body {
-      font-family: Calibri, Helvetica, sans-serif;
-      overflow: hidden;
-      background-image: url("https://www.dicasdeviagem.com/wp-content/uploads/2019/01/avenida-liberdade-braga-1200x839.jpg");
-      background-position: center;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      background-size: auto;
-      background-color: #cccccc;
-    }
-    button {
-      background-color: #4CAF50;
-      width: 100%;
-      color: orange;
-      padding: 15px;
-      margin: 10px 0px;
-      border: none;
-      cursor: pointer;
-    }
-    form {
-      border: 3px solid #f1f1f1;
-      float: top;
-    }
-    input[type=text], input[type=password] {
-      width: 100%;
-      margin: 8px 0;
-      padding: 12px 20px;
-      display: inline-block;
-      border: 2px solid green;
-      box-sizing: border-box;
-    }
-    button:hover {
-      opacity: 0.7;
-    }
-    .cancelbtn {
-      width: auto;
-      padding: 10px 18px;
-      margin: 10px 5px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Login Page </title>
+    <link rel="icon" href="https://i.imgur.com/teflePh.png"
+        type="image/x-icon">
+    <style>
+        Body {
+            font-family: Calibri, Helvetica, sans-serif;
+            overflow: hidden;
+            background-image: url("https://i.imgur.com/hiyfjhmh.jpg");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            overflow:hidden;
+            background-color: #cccccc;
+            min-height: 100%;
+        }
 
+        button {
+            background-color: #cccccc;
+            width: 100%;
+            color: rgb(0, 0, 0);
+            padding: 15px;
+            margin: 10px 0px;
+            border: 2px solid rgb(0, 0, 0);
+            cursor: pointer;
+        }
 
-    .container {
-      position: relative;
-      width: 30%;
-      height: 100%;
-      overflow: hidden;
-      background: url("https://cdn.discordapp.com/attachments/918462128103514202/933788594483642368/LI4.png") 0 0 no-repeat;
-      background-size: 50%;
-      background-position: top;
-      padding: 25px;
-      background-color: lightblue;
-    }
-  </style>
+        input {
+            width: 100%;
+            margin: 8px 0;
+            padding: 12px 20px;
+            display: inline-block;
+            border: 2px solid rgb(0, 0, 0);
+            box-sizing: border-box;
+            position:relative;
+        }
+
+        button:hover {
+            opacity: 0.7;
+        }
+
+        .cancelbtn {
+            width: auto;
+            padding: 10px 18px;
+            margin: 10px 5px;
+        }
+
+        .container {
+            width: 30%;
+            padding: 5%;
+            background-color: rgba(204, 204, 204, 0.7);
+            margin:auto;
+            vertical-align: auto;
+            position: relative;
+            height: auto;
+        }
+
+        .borderless{
+            border: none;
+        }
+
+        img.logo{
+            width: 50%;
+            height: auto;
+            left: 50%;
+            right: 50%;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+
+    </style>
 </head>
 <body>
-<center> <h1> (A)Typical FOOD  </h1> </center>
-<form>
-  <div class="container">
-    <button type="submit">Login</button>
-    <label>Email : </label>
-    <input type="text" placeholder="Enter Email" name="email" required>
-    <label>Password : </label>
-    <input type="password" placeholder="Enter Password" name="password" required>
-  </div>
-</form>
+    <form class="borderless" method="post">
+        <div class="container">
+            <img class="logo" src="https://i.imgur.com/teflePh.png">
+            <button type="submit">Login</button>
+            <label>Email : </label>
+            <input type="text" placeholder="Email" name="email" required
+            oninvalid="this.setCustomValidity('Introduza o seu email')"
+            oninput="this.setCustomValidity('')">
+            <label>Password : </label>
+            <input type="password" placeholder="Password" name="password" required
+            oninvalid="this.setCustomValidity('Introduza a sua palavra-passe')"
+            oninput="this.setCustomValidity('')">
+        </div>
+    </form>
 </body>
 </html>

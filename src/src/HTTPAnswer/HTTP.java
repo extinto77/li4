@@ -4,101 +4,88 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
+//AGORA É A CLASSE SERVER QUE CORRE O SERVER HTTTP
 public class HTTP implements Runnable {
-    public Socket s;
-    public boolean running;
-    public Lock l;
-    public InetAddress ip;
+    private InputStream input;
+    private Socket socket;
+    private PrintWriter output;
 
-    public HTTP(Socket s) {
-        this.s = s;
-        this.l = new ReentrantLock();
-        try {
-            this.ip = InetAddress.getLocalHost();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    //AGORA É A CLASSE SERVER QUE CORRE O SERVER HTTTP
+    public HTTP(Socket s) throws IOException {
+        input = s.getInputStream();
+        output = new PrintWriter(s.getOutputStream());
+        socket=s;
     }
 
-    public void turnOFF() throws IOException {
-        running = false;
-        Socket s = new Socket(ip, 8080);
-        s.close();
-    }
-
-    private void sendRegisto(OutputStream clientOutput) throws IOException {
-        File file = new File("src/src/HTTPAnswer/Registo.html");
+    //AGORA É A CLASSE SERVER QUE CORRE O SERVER HTTTP
+    private void sendHtml(String filename) throws IOException {
+        File file = new File("src/src/HTTPAnswer/"+filename+".html");
         BufferedReader br = new BufferedReader(new FileReader(file));
         String msg;
-        clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
-        clientOutput.write("\r\n".getBytes());
+        output.println("HTTP/1.1 200 OK");
+        output.println("");
         while ((msg = br.readLine()) != null)
-            clientOutput.write(msg.getBytes(StandardCharsets.UTF_8));
-        clientOutput.write("\r\n\r\n".getBytes());
-        clientOutput.flush();
+            output.print(msg);
+        output.println("");
+        output.flush();
     }
 
-    private void sendLogin(OutputStream clientOutput) throws IOException {
-        File file = new File("src/src/HTTPAnswer/Login.html");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String msg;
-        clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
-        clientOutput.write("\r\n".getBytes());
-        while ((msg = br.readLine()) != null)
-            clientOutput.write(msg.getBytes(StandardCharsets.UTF_8));
-        clientOutput.write("\r\n\r\n".getBytes());
-        clientOutput.flush();
+    //AGORA É A CLASSE SERVER QUE CORRE O SERVER HTTTP
+    private void readLogin() throws IOException {
+    }
+    //AGORA É A CLASSE SERVER QUE CORRE O SERVER HTTTP
+    private void readRegisto() {
     }
 
-    private void sendIndex(OutputStream clientOutput) throws IOException {
-        File file = new File("src/src/HTTPAnswer/index.html");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String msg;
-        clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
-        clientOutput.write("\r\n".getBytes());
-        while ((msg = br.readLine()) != null)
-            clientOutput.write(msg.getBytes(StandardCharsets.UTF_8));
-        clientOutput.write("\r\n\r\n".getBytes());
-        clientOutput.flush();
-    }
-
+    //AGORA É A CLASSE SERVER QUE CORRE O SERVER HTTTP
     @Override
     public void run() {
         try {
-            OutputStream clientOutput = s.getOutputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            String request = input.readLine();
-            System.out.println(request);
-            String[] requestParam = request.split(" ");
+            BufferedReader reader=new BufferedReader(new InputStreamReader(input));
+            String request = reader.readLine();
+            String[] requestParam = request.split(" ", 3);
             switch (requestParam[0]) {
                 case "GET":
                     switch (requestParam[1]) {
                         case "/":
-                            sendIndex(clientOutput);
+                            sendHtml("index");
                             break;
                         case "/registo":
-                            sendRegisto(clientOutput);
+                            sendHtml("Registo");
                             break;
                         case "/login":
-                            sendLogin(clientOutput);
+                            sendHtml("Login");
                             break;
                     }
                     break;
-            }
+                case "POST":
+                    switch (requestParam[1]) {
+                        case "/registo":
+                            readRegisto();
+                            break;
+                        case "/login":
+                            readLogin();
+                            break;
+                    }
+                default:
 
+                    break;
+
+            }
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
+    //AGORA É A CLASSE SERVER QUE CORRE O SERVER HTTTP
     public static void main(String[] args) throws IOException {
         ServerSocket ss = new ServerSocket(8080);
-        while (true) {
+        while(true){
             Socket s = ss.accept();
             HTTP http = new HTTP(s);
             new Thread(http).start();
