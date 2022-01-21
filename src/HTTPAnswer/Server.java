@@ -28,7 +28,7 @@ public class Server {
         HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName("localhost"), 8080), 5);
 
         AuthenticatorTest authenticatorHome = new AuthenticatorTest("/home");
-        AuthenticatorTest authenticatorLogin = new AuthenticatorTest("/login/");
+        AuthenticatorTest authenticatorLogin = new AuthenticatorTest("/login");
 
         // Login requests
         HttpContext loginContext = server.createContext("/login", exchange -> {
@@ -94,7 +94,7 @@ public class Server {
     }
 
     static public String HtmlText(String filename) throws IOException {
-        File file = new File("src/src/HTTPAnswer/" + filename + ".html");
+        File file = new File("src/HTTPAnswer/" + filename + ".html");
         BufferedReader br = new BufferedReader(new FileReader(file));
         StringBuilder sb = new StringBuilder();
         String msg;
