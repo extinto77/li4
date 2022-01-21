@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home</title>
+    <link rel="icon" href="https://i.imgur.com/teflePh.png"
+          type="image/x-icon">
+    <style>
+        Body {
+            font-family: Calibri, Helvetica, sans-serif;
+            overflow: hidden;
+            background-color: white;
+            min-height: 100%;
+        }
+        .container {
+            width: 30%;
+            padding: 5%;
+            background-color: white;
+            margin:auto;
+            vertical-align: center;
+            position: relative;
+            align-content: center;
+            height: auto;
+        }
+        button {
+            background-color: #cccccc;
+            width: 100%;
+            color: rgb(0, 0, 0);
+            padding: 15px;
+            margin: 10px 0px;
+            border: 2px solid rgb(0, 0, 0);
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.7;
+        }
+        img.logo{
+            width: 7%;
+            height: auto;
+            left: 50%;
+            right: 50%;
+            padding-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        img.settings{
+            float: left;
+            width: 30px;
+            height: auto;
+            resize: none;
+            left: 100%;
+            display: block;
+            margin-top: 15px;
+            margin-right: 10px;
+        }
+        /* Hide default HTML checkbox */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+        .top{
+            width: 80%;
+            vertical-align: auto;
+            position: relative;
+            height: auto;
+            padding: 20px 5%;
+            border: 2px solid black;
+            margin: auto auto 20px;
+        }
+        .user{
+            float: right;
+        }
+        .logout{
+            border: none;
+            background: none;
+            padding-right: 0px;
+            padding-top: 0px;
+            margin-top: -7px;
+            height: 30px;
+            width: 30px;
+            opacity: 1;
+            float: right;
+
+        }
+        #myMap{
+            alignment: right;
+        }
+    </style>
+    <script type='text/javascript'
+            src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap' async defer></script>
+
+    <script type='text/javascript'>
+        var map, clusterLayer, infobox;
+
+        function GetMap()
+        {
+            map = new Microsoft.Maps.Map('#myMap', {
+                credentials: 'AjTFwWawiKzPJHwxvYa13coYi9WhXcSwRALkpxzKLzzv_V7Euj2grSRG0HOABFk4',
+                mapTypeId: Microsoft.Maps.MapTypeId.aerial
+            });
+
+            Microsoft.Maps.loadModule('Microsoft.Maps.AutoSuggest', function () {
+                var manager = new Microsoft.Maps.AutosuggestManager({ map: map });
+                manager.attachAutosuggest('#searchBox', '#searchBoxContainer', selectedSuggestion);
+            });
+
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var selfLoc = new Microsoft.Maps.Location(
+                    position.coords.latitude,
+                    position.coords.longitude);
+
+
+                var selfpin = new Microsoft.Maps.Pushpin(selfLoc,{
+                    icon: 'https://www.bingmapsportal.com/Content/images/poi_custom.png',
+                    anchor: new Microsoft.Maps.Point(12, 39)});
+                map.entities.push(selfpin);
+
+
+                //Center the map on the user's location.
+                map.setView({ center: selfLoc, zoom: 20 });
+            })
+
+            infobox = new Microsoft.Maps.Infobox(map.getCenter(), { visible: true });
+            infobox.setMap(map);
+
+            Microsoft.Maps.loadModule("Microsoft.Maps.Clustering", function () {
+                //Create a clustering layer
+                clusterLayer = new Microsoft.Maps.ClusterLayer(createCustomPushpins(10), {
+                    clusteredPinCallback: createCustomClusterPushpins,
+                    callback: createPushpinList
+                });
+
+                //Add a click event to the clustering layer.
+                Microsoft.Maps.Events.addHandler(clusterLayer, 'click', pushpinClicked);
+
+                map.layers.insert(clusterLayer);
+            });
+        }
+
+        function createCustomPushpins(size) {
+            //Generate 100 random pushpins within the map bounds.
+            var pins = Microsoft.Maps.TestDataGenerator.getPushpins(size, map.getBounds());
+
+            for (var i = 0; i < size; i++) {
+                //Create a title for each pushpin.
+                pins[i].setOptions({ title: 'Pushpin #' + i });
+            }
+
+            return pins;
+        }
+
+        function createCustomClusterPushpins(cluster) {
+            //Create a title for the cluster.
+            cluster.setOptions({
+                title: 'Cluster of ' + cluster.containedPushpins.length + ' pins'
+            });
+        }
+
+        function pushpinClicked(e) {
+            //Show an infobox when a pushpin is clicked.
+            showInfobox(e.target);
+        }
+
+        function createPushpinList() {
+            //Create a list of displayed pushpins each time clustering layer updates.
+
+            if (clusterLayer != null) {
+                infobox.setOptions({ visible: false });
+
+                //Get all pushpins that are currently displayed.
+                var data = clusterLayer.getDisplayedPushpins();
+                var output = [];
+
+                //Create a list of links for each pushpin that opens up the infobox for it.
+                for (var i = 0; i < data.length; i++) {
+                    output.push("<a href='javascript:void(0);' onclick='showInfoboxByGridKey(", data[i].gridKey, ");'>");
+                    output.push(data[i].getTitle(), "</a><br/>");
+                }
+
+                document.getElementById('listOfPins').innerHTML = output.join('');
+            }
+        }
+
+        function showInfoboxByGridKey(gridKey) {
+            //Look up the cluster or pushpin by gridKey.
+            var clusterPin = clusterLayer.getClusterPushpinByGridKey(gridKey);
+
+            //Show an infobox for the cluster or pushpin.
+            showInfobox(clusterPin);
+        }
+
+        function showInfobox(pin) {
+            var description = [];
+
+            //Check to see if the pushpin is a cluster.
+            if (pin.containedPushpins) {
+
+                //Create a list of all pushpins that are in the cluster.
+                description.push('<div style="max-height:75px;overflow-y:auto;"><ul>');
+                for (var i = 0; i < pin.containedPushpins.length; i++) {
+                    description.push('<li>', pin.containedPushpins[i].getTitle(), '</li>');
+                }
+                description.push('</ul></div>');
+            }
+
+            //Display an infobox for the pushpin.
+            infobox.setOptions({
+                title: pin.getTitle(),
+                location: pin.getLocation(),
+                description: description.join(''),
+                visible: true
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="top">
+    <bold>HOME</bold>
+    <bold class="user">USERNAME
+        <button type="submit" class="logout" >
+            <img src="https://i.imgur.com/MKVEzDH.jpg" height=30px width=30px>
+        </button>
+    </bold>
+</div>
+<div class="container">
+    <div id="myMap" style="width:500px; height:500px;"></div>
+    <br />
+    <div id="listOfPins" style="position: center; max-height:250px;width:250px;overflow-y:scroll;"></div>
+</div>
+</body>
+</html>
