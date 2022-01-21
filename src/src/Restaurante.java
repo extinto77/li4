@@ -1,5 +1,6 @@
 package src;
 
+import src.Exceptions.InvalidFormat;
 import src.Exceptions.MaxSizeOvertake;
 
 import java.util.Date;
@@ -9,15 +10,15 @@ public class Restaurante {
     private String localidade;
     private String rua;
     private String gps;
-    private String preco;
+    private float preco;
     private String nome;
-    private String telefone;
+    private int telefone;
     private String id; // primary key
 
     public Restaurante() {
     }
 
-    public Restaurante(String paisOrigem, String localidade, String rua, String gps, String preco, String nome, String telefone, String id) throws MaxSizeOvertake {
+    public Restaurante(String paisOrigem, String localidade, String rua, String gps, String preco, String nome, String telefone, String id) throws MaxSizeOvertake, InvalidFormat {
         setPaisOrigem(paisOrigem);
         setLocalidade(localidade);
         setRua(rua);
@@ -26,6 +27,21 @@ public class Restaurante {
         setNome(nome);
         setTelefone(telefone);
         setId(id);
+    }
+
+    private float toNum(String preco) throws InvalidFormat { //"XXX,XX€"
+        String[] nums = preco.split(",");
+        int dec, in;
+        if(nums.length == 2){
+            in = Integer.parseInt(nums[0]);
+            String[]decs = nums[1].split("€");
+            if (decs.length==1 && decs[0].length()==2){
+                dec = Integer.parseInt(decs[0]);
+            }
+            else throw new InvalidFormat();
+            return (float) (in+(dec / 100.0));
+        }
+        else throw new InvalidFormat();
     }
 
     public String getPaisOrigem() {
@@ -68,14 +84,14 @@ public class Restaurante {
         this.gps = gps;
     }
 
-    public String getPreco() {
+    public float getPreco() {
         return preco;
     }
 
-    public void setPreco(String preco) throws MaxSizeOvertake {
+    public void setPreco(String preco) throws MaxSizeOvertake, InvalidFormat {
         int MAX_SIZE = 7;
         if (preco.length()> MAX_SIZE) throw new MaxSizeOvertake();
-        this.preco = preco;
+        this.preco = toNum(preco);
     }
 
     public String getNome() {
@@ -88,14 +104,21 @@ public class Restaurante {
         this.nome = nome;
     }
 
-    public String getTelefone() {
+    public int getTelefone() {
         return telefone;
     }
 
-    public void setTelefone(String telefone) throws MaxSizeOvertake {
+    public void setTelefone(String telefone) throws MaxSizeOvertake, InvalidFormat {
         int MAX_SIZE = 9;
         if (telefone.length()> MAX_SIZE) throw new MaxSizeOvertake();
-        this.telefone = telefone;
+        int aux = Integer.parseInt(telefone);
+        if(aux<201000000|| aux>299999999 ||
+                (aux>=230000000 && aux<=230999999) || (aux>=237000000 && aux<=237999999) ||
+                (aux>=240000000 && aux<=240999999) || (aux>=246000000 && aux<=248999999) ||
+                (aux>=257000000 && aux<=257999999) || (aux>=287000000 && aux<=287999999) ||
+                (aux>=297000000 && aux<=297999999)
+        ) throw new InvalidFormat();
+        this.telefone = aux;
     }
 
     public String getId() {

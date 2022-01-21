@@ -1,10 +1,7 @@
 package src.DataBase;
 
 import src.Cliente;
-import src.Exceptions.AddingError;
-import src.Exceptions.BDFailedConnection;
-import src.Exceptions.MaxSizeOvertake;
-import src.Exceptions.NoMatch;
+import src.Exceptions.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,7 +24,7 @@ public class ClienteDAO {
             c.setEmail(rs.getString("email"));
             c.setTelemovel(rs.getString("telemovel"));
             c.setPassword(rs.getString("password"));
-        } catch (SQLException | MaxSizeOvertake e) {
+        } catch (SQLException | MaxSizeOvertake | InvalidFormat e) {
             return null;
         }
         return c;
@@ -41,7 +38,7 @@ public class ClienteDAO {
                 ps.setDate(2, new java.sql.Date(c.getDataNascimento().getTime()));//rever
                 ps.setString(3, c.getNome());
                 ps.setString(4, c.getEmail());
-                ps.setString(5, c.getTelemovel());
+                ps.setString(5, ""+c.getTelemovel());
                 ps.setString(6, c.getPassword());
                 ps.executeUpdate();
             } catch (SQLException e) {
@@ -53,7 +50,7 @@ public class ClienteDAO {
     }
 
     Cliente getByUsername(String username) throws BDFailedConnection, NoMatch {
-        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM cliente WHERE username="+username); // ver se é "... 'username'=" e na de baixo também
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM cliente WHERE username='"+username+"'"); // ver se é "... 'username'=" e na de baixo também
         if(ps != null){
             try {
                 ResultSet rs = ps.executeQuery();
@@ -69,7 +66,7 @@ public class ClienteDAO {
         throw new BDFailedConnection();
     }
 
-    Cliente changeInfo(String username, String newUsername, String nome, String email, String password) throws BDFailedConnection, NoMatch, AddingError {
+    Cliente changeInfo(String username, String newUsername, String nome, String email, String password) throws BDFailedConnection, AddingError {
         if(newUsername==null && nome==null && email==null && password==null) return null;
         boolean first=true;
         String command = "UPDATE cliente SET ";
@@ -106,7 +103,7 @@ public class ClienteDAO {
     }
 
     public int deleteCliente(String username) throws BDFailedConnection, AddingError {
-        PreparedStatement ps = JDBC.codLine(this.con, "DELETE FROM cliente WHERE username="+username);
+        PreparedStatement ps = JDBC.codLine(this.con, "DELETE FROM cliente WHERE username='"+username+"'");
         if(ps != null){
             try {
                 ps.executeUpdate();

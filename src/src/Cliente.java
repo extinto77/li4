@@ -1,5 +1,6 @@
 package src;
 
+import src.Exceptions.InvalidFormat;
 import src.Exceptions.MaxSizeOvertake;
 
 import java.util.Date;
@@ -9,12 +10,14 @@ public class Cliente {
     private Date dataNascimento;
     private String nome;
     private String email;
-    private String telemovel;
+    private int telemovel;
     private String password;
+
+    // fazer hash para a password
 
     public Cliente(){}
 
-    public Cliente(String username, Date dataNascimento, String nome, String email, String telemovel, String password) throws MaxSizeOvertake{
+    public Cliente(String username, Date dataNascimento, String nome, String email, String telemovel, String password) throws MaxSizeOvertake, InvalidFormat {
         setUsername(username);
         setNome(nome);
         setEmail(email);
@@ -61,14 +64,16 @@ public class Cliente {
         this.email = email;
     }
 
-    public String getTelemovel() {
+    public int getTelemovel() {
         return telemovel;
     }
 
-    public void setTelemovel(String telemovel) throws MaxSizeOvertake {
+    public void setTelemovel(String telemovel) throws MaxSizeOvertake, InvalidFormat {
         int MAX_SIZE = 9;
         if (telemovel.length()> MAX_SIZE) throw new MaxSizeOvertake();
-        this.telemovel = telemovel;
+        int aux = Integer.parseInt(telemovel);
+        if (aux<900000000 || aux>999999999 )throw new InvalidFormat();
+        this.telemovel = aux;
     }
 
     public String getPassword() {

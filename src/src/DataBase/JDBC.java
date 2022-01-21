@@ -1,10 +1,12 @@
 package src.DataBase;
 import src.Avaliacao;
+import src.Cliente;
 import src.Comida;
 import src.Exceptions.AddingError;
 import src.Exceptions.BDFailedConnection;
 import src.Exceptions.InvalidFormat;
 import src.Exceptions.MaxSizeOvertake;
+import src.Restaurante;
 
 import java.sql.*;
 import java.util.Date;
@@ -35,10 +37,19 @@ public class JDBC {
             ComidaDAO com = tab.getCom();
             RestauranteDAO res = tab.getRes();
 
-            Comida c = new Comida(12345, (short)0, "Pastel nata");
-            Avaliacao a = new Avaliacao("artur", 3, new java.sql.Date(System.currentTimeMillis()), "poc poc poc", "tascaZe", "tobias");
-            com.addComida(c);
-            ava.addAvaliacao(a);
+            Comida comida = new Comida(12345, (short)0, "bigmac");
+            Avaliacao avaliacao = new Avaliacao("arturNoMc", 3, new java.sql.Date(System.currentTimeMillis()), "estava bom o bigmac", "Mc", "artur123");
+            Cliente cliente = new Cliente("artur123", new java.sql.Date(System.currentTimeMillis()), "artur", "artur456@gmail.com", "969696969", "arturito");
+            Restaurante restaurante = new Restaurante("usa", "braga", "rua dos restaurantes", "14ºN,23ºE", "8,00€", "mcdonalds", "253253253", "Mc");
+
+
+            if(com.addComida(comida)==1) System.out.println("comida add ducesso");
+            if(ava.addAvaliacao(avaliacao)==1)System.out.println("avaliacao add ducesso");
+            if(cli.addCliente(cliente)==1)System.out.println("cliente add ducesso");
+            if(res.addRestaurante(restaurante)==1)System.out.println("restaurante add ducesso");
+
+            if(cli.deleteCliente(cliente.getUsername())==1) System.out.println("sucesso a eliminar user");
+
         } catch (SQLException | MaxSizeOvertake | AddingError | BDFailedConnection | InvalidFormat throwables) {
             throwables.printStackTrace();
         }

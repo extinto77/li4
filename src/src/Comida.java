@@ -5,7 +5,7 @@ import src.Exceptions.MaxSizeOvertake;
 
 public class Comida {
     private int id;
-    private short vegetariano;
+    private boolean vegetariano;
     private String nome;
 
     public Comida(){
@@ -26,14 +26,14 @@ public class Comida {
         this.id = id;
     }
 
-    public short getVegetariano() {
+    public boolean getVegetariano() {
         return vegetariano;
     }
 
     public void setVegetariano(short vegetariano) throws InvalidFormat {
-        if (!(vegetariano == (short)0 || vegetariano==(short)1))
-            throw new InvalidFormat();
-        this.vegetariano = vegetariano;
+        if (vegetariano == (short)0) this.vegetariano=false;
+        else if(vegetariano==(short)1) this.vegetariano = true;
+        else throw new InvalidFormat();
     }
 
     public String getNome() {

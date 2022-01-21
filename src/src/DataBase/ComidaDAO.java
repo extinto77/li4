@@ -27,12 +27,17 @@ public class ComidaDAO {
         return c;
     }
 
+    private short short2boolean(boolean b){
+        if (b) return (short) 1;
+        else return (short) 0;
+    }
+
     public int addComida(Comida c) throws BDFailedConnection, AddingError {
         PreparedStatement ps = JDBC.codLine(this.con, "Insert into comida(id,vegetariano,nome) values (?,?,?)");
         if(ps != null){
             try {
                 ps.setInt(1,c.getId());
-                ps.setShort(2,c.getVegetariano());
+                ps.setShort(2,short2boolean(c.getVegetariano()));
                 ps.setString(3,c.getNome());
                 ps.executeUpdate();
             } catch (SQLException e) {
@@ -44,7 +49,7 @@ public class ComidaDAO {
     }
 
     Comida getById(int id) throws BDFailedConnection, NoMatch {
-        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM comida WHERE id="+id); // ver se é "... 'username'=" e na de baixo também
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM comida WHERE id='"+id+"'"); // ver se é "... 'username'=" e na de baixo também
         if(ps != null){
             try {
                 ResultSet rs = ps.executeQuery();

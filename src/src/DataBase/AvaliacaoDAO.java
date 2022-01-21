@@ -53,7 +53,7 @@ public class AvaliacaoDAO {
     }
 
     Avaliacao getByIdAvaliacao(String id) throws BDFailedConnection {
-        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM avaliacao WHERE id="+id); // ver se é "... 'id'=" e na de baixo também
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM avaliacao WHERE id='"+id+"'"); // ver se é "... 'id'=" e na de baixo também
         if(ps != null){
             try {
                 ResultSet rs = ps.executeQuery();
@@ -71,7 +71,7 @@ public class AvaliacaoDAO {
 
     public List<Avaliacao> getAvaliacoes(String flag, String id) throws InvalidFormat, BDFailedConnection {
         if (!(flag.equals("restaurante") || flag.equals("username"))) throw new InvalidFormat();
-        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM avaliacao WHERE " + flag + "=" + id);
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM avaliacao WHERE "+flag+"='"+id+"'");
         List<Avaliacao> list = new ArrayList<>();
         if (ps != null) {
             try {

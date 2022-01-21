@@ -1,10 +1,10 @@
 package src.DataBase;
 
 public class Tables {
-    private AvaliacaoDAO ava;
-    private ClienteDAO cli;
-    private ComidaDAO com;
-    private RestauranteDAO res;
+    private final AvaliacaoDAO ava;
+    private final ClienteDAO cli;
+    private final ComidaDAO com;
+    private final RestauranteDAO res;
 
     public Tables(AvaliacaoDAO ava, ClienteDAO cli, ComidaDAO com, RestauranteDAO res) {
         this.ava = ava;

@@ -13,21 +13,6 @@ public class RestauranteDAO {
         this.con = con;
     }
 
-    private float toNum(String preco) throws InvalidFormat { //"XXX,XX€"
-        String[] nums = preco.split(",");
-        int dec, in;
-        if(nums.length == 2){
-            in = Integer.parseInt(nums[0]);
-            String[]decs = nums[1].split("€");
-            if (decs.length==1 && decs[0].length()==2){
-                dec = Integer.parseInt(decs[0]);
-            }
-            else throw new InvalidFormat();
-            return (float) (in+(dec / 100.0));
-        }
-        else throw new InvalidFormat();
-    }
-
     private Restaurante fromResultSet2Rest(ResultSet rs){
         Restaurante r = new Restaurante();
         try {
@@ -39,10 +24,20 @@ public class RestauranteDAO {
             r.setNome(rs.getString("nome"));
             r.setTelefone(rs.getString("telefone"));
             r.setId(rs.getString("id"));
-        } catch (SQLException | MaxSizeOvertake e) {
+        } catch (SQLException | MaxSizeOvertake | InvalidFormat e) {
             return null;
         }
         return r;
+    }
+
+    private String float2String(float fl){
+        int inteiro = (int) fl;
+        int decimal = (int)((fl-inteiro)*100);
+        String str = inteiro +",";
+        if(decimal==0) str += "00€";
+        else if(decimal<10) str += "0"+decimal+"€";
+        else str += decimal+"€";
+        return str;
     }
 
     public int addRestaurante(Restaurante r) throws BDFailedConnection, AddingError {
@@ -53,9 +48,9 @@ public class RestauranteDAO {
                 ps.setString(2,r.getLocalidade());
                 ps.setString(3,r.getRua());
                 ps.setString(4,r.getGps());
-                ps.setString(5,r.getPreco());
+                ps.setString(5,float2String(r.getPreco()));
                 ps.setString(6,r.getNome());
-                ps.setString(7,r.getTelefone());
+                ps.setString(7,""+r.getTelefone());
                 ps.setString(8,r.getId());
 
                 ps.executeUpdate();
@@ -69,7 +64,7 @@ public class RestauranteDAO {
     }
 
     Restaurante getByIdRestaurante(String id) throws BDFailedConnection {
-        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE id="+id); // ver se é "... 'id'=" e na de baixo também
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE id='"+id+"'"); // ver se é "... 'id'=" e na de baixo também
         if(ps != null){
             try {
                 ResultSet rs = ps.executeQuery();
@@ -86,7 +81,7 @@ public class RestauranteDAO {
     }
 
     public List<Restaurante> getRestaurantesByNacionalidade(String nacionalidade) throws BDFailedConnection {
-        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE nacionalidade=" + nacionalidade); // rever
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE nacionalidade='"+nacionalidade+"'"); // rever
 
         List<Restaurante> list = new ArrayList<>();
         if (ps != null) {
@@ -118,10 +113,8 @@ public class RestauranteDAO {
                     Restaurante r = fromResultSet2Rest(rs);
                     if(r != null){
                         String resNome = r.getNome().toLowerCase();
-                        if(lower_nome.matches(resNome+"(.*)") ||
-                            lower_nome.matches("(.*)"+ resNome+"(.*)") ||
-                            lower_nome.matches("(.*)" + resNome))
-                                list.add(r);
+                        if(lower_nome.matches("(.*)"+ resNome+"(.*)"))
+                            list.add(r);
                     }
                 }
             }catch (SQLException e) {
@@ -143,12 +136,9 @@ public class RestauranteDAO {
                 while (rs.next()) {
                     Restaurante r = fromResultSet2Rest(rs);
                     if(r != null){
-                        try{
-                            float preco = toNum(r.getPreco());
-                            if(min<=preco && preco<=max)
-                                list.add(r);
-                        }
-                        catch (InvalidFormat ignored){};
+                        float preco = r.getPreco();
+                        if(min<=preco && preco<=max)
+                            list.add(r);
                     }
                 }
             }catch (SQLException e) {
@@ -158,12 +148,6 @@ public class RestauranteDAO {
         }
         throw new BDFailedConnection();
     }
-    /* RANDOM
-    int size = list.size();
-    Random rand = new Random();
-    int index = rand.nextInt(size);
-    return list.get(index);
-    */
 
     public List<Restaurante> getAllRestaurantes() throws BDFailedConnection {
         PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante");
@@ -195,7 +179,7 @@ public class RestauranteDAO {
 
 
     public static void main(String[] args) throws InvalidFormat {
-        String url = "jdbc:mysql://localhost:3306/li4";
+        /*String url = "jdbc:mysql://localhost:3306/li4";
         String user = "besta";
         String password = "bestasmei1920";
 
@@ -211,11 +195,11 @@ public class RestauranteDAO {
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-        }
-
+        }*/
+        String str = "1cenas";
+        System.out.println(str.matches("(.*)cenas"));
+        System.out.println(str.matches("cenas(.*)"));
+        System.out.println(str.matches("(.*)cenas(.*)"));
     }
-
-
-
 
 }
