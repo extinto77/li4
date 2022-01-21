@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>home</title>
+    <title>Home</title>
     <link rel="icon" href="https://i.imgur.com/teflePh.png"
           type="image/x-icon">
     <style>
@@ -13,7 +13,16 @@
             background-color: white;
             min-height: 100%;
         }
-
+        .container {
+            width: 30%;
+            padding: 5%;
+            background-color: white;
+            margin:auto;
+            vertical-align: center;
+            position: relative;
+            align-content: center;
+            height: auto;
+        }
         button {
             background-color: #cccccc;
             width: 100%;
@@ -241,8 +250,10 @@
         </button>
     </bold>
 </div>
-<div id="myMap" style="position:relative; width:600px; height:400px;"></div>
-<br />
-<div id="listOfPins" style="max-height:250px;width:250px;overflow-y:scroll;"></div>
+<div class="container">
+    <div id="myMap" style="width:500px; height:500px;"></div>
+    <br />
+    <div id="listOfPins" style="position: center; max-height:250px;width:250px;overflow-y:scroll;"></div>
+</div>
 </body>
 </html>
