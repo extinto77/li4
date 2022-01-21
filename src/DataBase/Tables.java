@@ -1,4 +1,4 @@
-package src.DataBase;
+package DataBase;
 
 public class Tables {
     private final AvaliacaoDAO ava;

@@ -1,12 +1,12 @@
-package src.DataBase;
+package DataBase;
 import src.Avaliacao;
 import src.Cliente;
 import src.Comida;
-import src.Exceptions.AddingError;
-import src.Exceptions.BDFailedConnection;
-import src.Exceptions.InvalidFormat;
-import src.Exceptions.MaxSizeOvertake;
-import src.Restaurante;
+import Exceptions.AddingError;
+import Exceptions.BDFailedConnection;
+import Exceptions.InvalidFormat;
+import Exceptions.MaxSizeOvertake;
+import Restaurante;
 
 import java.sql.*;
 import java.util.Date;

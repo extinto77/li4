@@ -1,7 +1,7 @@
-package src.DataBase;
+package DataBase;
 
-import src.Cliente;
-import src.Exceptions.*;
+import Cliente;
+import Exceptions.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

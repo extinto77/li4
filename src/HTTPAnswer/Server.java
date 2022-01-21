@@ -1,4 +1,4 @@
-package src.HTTPAnswer;
+package HTTPAnswer;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpContext;
@@ -10,10 +10,10 @@ import com.sun.net.httpserver.Authenticator;
 import com.sun.net.httpserver.BasicAuthenticator;
 import com.sun.net.httpserver.Authenticator.Retry;
 
-import src.DataBase.ClienteDAO;
-import src.DataBase.Tables;
-import src.Exceptions.BDFailedConnection;
-import src.Exceptions.NoMatch;
+import DataBase.ClienteDAO;
+import DataBase.Tables;
+import Exceptions.BDFailedConnection;
+import Exceptions.NoMatch;
 
 import java.io.*;
 import java.net.InetAddress;

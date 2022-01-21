@@ -1,7 +1,7 @@
-package src.DataBase;
+package DataBase;
 
-import src.Comida;
-import src.Exceptions.*;
+import Comida;
+import Exceptions.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

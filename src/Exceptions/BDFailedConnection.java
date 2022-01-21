@@ -1,4 +1,4 @@
-package src.Exceptions;
+package Exceptions;
 
 public class BDFailedConnection extends Exception{
 }

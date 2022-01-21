@@ -1,8 +1,8 @@
-package src.DataBase;
+package DataBase;
 
-import src.Avaliacao;
-import src.Exceptions.*;
-import src.DataBase.JDBC;
+import Avaliacao;
+import Exceptions.*;
+import DataBase.JDBC;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

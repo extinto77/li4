@@ -1,6 +1,4 @@
-package src;
-
-import src.Exceptions.MaxSizeOvertake;
+import Exceptions.MaxSizeOvertake;
 
 import java.util.Date;
 

@@ -1,7 +1,5 @@
-package src;
-
-import src.Exceptions.InvalidFormat;
-import src.Exceptions.MaxSizeOvertake;
+import Exceptions.InvalidFormat;
+import Exceptions.MaxSizeOvertake;
 
 public class Comida {
     private int id;

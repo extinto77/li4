@@ -1,7 +1,7 @@
-package src.DataBase;
+package DataBase;
 
-import src.Exceptions.*;
-import src.Restaurante;
+import Exceptions.*;
+import Restaurante;
 
 import java.sql.*;
 import java.util.*;

@@ -1,4 +1,4 @@
-package src.Exceptions;
+package Exceptions;
 
 public class NoMatch extends Exception{
 }
