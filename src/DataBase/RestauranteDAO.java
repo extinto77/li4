@@ -1,7 +1,6 @@
 package DataBase;
 
 import Exceptions.*;
-import Restaurante;
 
 import java.sql.*;
 import java.util.*;

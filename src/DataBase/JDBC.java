@@ -1,15 +1,11 @@
 package DataBase;
-import src.Avaliacao;
-import src.Cliente;
-import src.Comida;
+
 import Exceptions.AddingError;
 import Exceptions.BDFailedConnection;
 import Exceptions.InvalidFormat;
 import Exceptions.MaxSizeOvertake;
-import Restaurante;
 
 import java.sql.*;
-import java.util.Date;
 
 public class JDBC {
     public static PreparedStatement codLine(Connection con, String str){

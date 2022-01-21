@@ -1,6 +1,5 @@
 package DataBase;
 
-import Comida;
 import Exceptions.*;
 
 import java.sql.Connection;

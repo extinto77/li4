@@ -1,8 +1,6 @@
 package DataBase;
 
-import Avaliacao;
 import Exceptions.*;
-import DataBase.JDBC;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

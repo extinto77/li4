@@ -29,6 +29,7 @@ public class Server {
 
         AuthenticatorTest authenticatorHome = new AuthenticatorTest("/home");
         AuthenticatorTest authenticatorLogin = new AuthenticatorTest("/login/");
+
         // Login requests
         HttpContext loginContext = server.createContext("/login", exchange -> {
             Headers h = exchange.getResponseHeaders();
@@ -75,6 +76,7 @@ public class Server {
             }
         });
 
+        //Home requests
         HttpContext homeContext = server.createContext("/home", exchange -> {
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {

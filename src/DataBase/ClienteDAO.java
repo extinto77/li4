@@ -1,6 +1,5 @@
 package DataBase;
 
-import Cliente;
 import Exceptions.*;
 
 import java.sql.Connection;
