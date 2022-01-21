@@ -42,7 +42,7 @@
 
         .container {
             width: 80%;
-            padding: 5%;
+            padding: 3% 5%;
             background-color: rgba(204, 204, 204, 0.7);
             margin:auto;
             vertical-align: auto;
@@ -63,10 +63,11 @@
             border: none;
         }
         img.logo{
-            width: 10%;
+            width: 7%;
             height: auto;
             left: 50%;
             right: 50%;
+            padding-top: 20px;
             margin-left: auto;
             margin-right: auto;
             display: block;
@@ -78,32 +79,29 @@
             resize: none;
             left: 100%;
             display: block;
+            margin-top: 15px;
             margin-right: 10px;
         }
         .def{
-            display: inline;
+            display: inline-block;
             background-size: cover;
         }
         .def_text{
-            margin-top: 7.2px;
-        }
-        .local{
-
+            float: right;
         }
         .switch {
             position: relative;
             display: inline-block;
             width: 50px;
             height: 25px;
-        }
 
+        }
         /* Hide default HTML checkbox */
         .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
-
         /* The slider */
         .slider {
             position: absolute;
@@ -153,38 +151,85 @@
             height: 17px;
             width: 17px;
         }
+        .local{
+            position: relative;
+            display: inline-block;
+        }
+        .elimina{
+            border: none;
+            background: none;
+            padding-left: 4px;
+            padding-top: 3px;
+            margin-top: 10px;
+            height: 30px;
+            width: 30px;
+            opacity: 1;
+
+        }
+        .top{
+            width: 80%;
+            vertical-align: auto;
+            position: relative;
+            height: auto;
+            padding: 20px 5%;
+            border: 2px solid black;
+            margin: auto auto 20px;
+        }
+        .user{
+            float: right;
+        }
+        .logout{
+            border: none;
+            background: none;
+            padding-right: 0px;
+            padding-top: 0px;
+            margin-top: -7px;
+            height: 30px;
+            width: 30px;
+            opacity: 1;
+            float: right;
+
+        }
     </style>
 </head>
 
 <body>
+    <div class="top">
+        <bold>DEFINIÇÕES</bold>
+        <bold class="user">USERNAME
+        <button type="submit" class="logout" >
+            <img src="https://i.imgur.com/MKVEzDH.jpg" height=30px width=30px>
+        </button>
+        </bold>
 
+    </div>
     <div class="container">
         <div class="def">
         <img class="settings" src="https://media.discordapp.net/attachments/898487135739461632/934122246543405216/Prc6GrK.png?width=648&height=646">
         <div class="def_text">
-            <bold>DEFINIÇÕES</bold>
+            <h2>DEFINIÇÕES</h2>
         </div>
         </div>
         <form class="borderless" method="post">
         <button type="submit">Editar</button>
         <div class="flex-parent">
             <div class="flex-child">
-                <input type="text" placeholder="Nome Completo" name="nome" required
+                <input type="text" placeholder="Nome Completo" name="nome"
                        oninvalid="this.setCustomValidity('Introduza o seu nome')"
                        oninput="this.setCustomValidity('')">
 
-                <input type="number" placeholder="Número de telemóvel" name="numero" required
+                <input type="number" placeholder="Número de telemóvel" name="numero"
                        oninvalid="this.setCustomValidity('Introduza o seu número de telemóvel')"
                        oninput="this.setCustomValidity('')"
                        maxlength="9"
                        minlength="9">
 
-                <input type="date" placeholder="Data de Nascimento" name="nascimento" required
+                <input type="date" placeholder="Data de Nascimento" name="nascimento"
                        oninvalid="this.setCustomValidity('Introduza a sua data de nascimento')"
                        oninput="this.setCustomValidity('')">
             </div>
             <div class="flex-child">
-                <input type="text" placeholder="Username" name="username" required
+                <input type="text" placeholder="Username" name="username"
                        oninvalid="this.setCustomValidity('Introduza o seu username')"
                        oninput="this.setCustomValidity('')">
 
@@ -199,7 +244,7 @@
         </div>
         </form>
         <div class="local">
-        <bold>LOCALIZAÇÃO</bold>
+        <bold class="local_txt">LOCALIZAÇÃO</bold>
             <label class="switch">
                 <input type="checkbox">
                 <span class="slider round"></span>
@@ -207,6 +252,10 @@
         </div>
         <div>
         <bold>ELIMINAR CONTA</bold>
+        <button type = "submit" class="elimina">
+            <img class="lixo" src="https://i.imgur.com/YpcUx5n.png" height=25px width=auto/>
+        </button>
+
         </div>
     </div>
 
