@@ -14,11 +14,12 @@
             min-height: 100%;
         }
         .container {
-            width: 30%;
-            padding: 5%;
+            width: 89%;
+            padding: 0 5%;
             background-color: white;
             margin:auto;
             vertical-align: center;
+            horiz-align: center;
             position: relative;
             align-content: center;
             height: auto;
@@ -36,12 +37,13 @@
             opacity: 0.7;
         }
         img.logo{
+            position: fixed;
             width: 7%;
             height: auto;
             left: 50%;
             right: 50%;
-            padding-top: 20px;
-            margin-left: auto;
+            padding-top: 0;
+            margin-left: -3.4%;
             margin-right: auto;
             display: block;
         }
@@ -55,38 +57,7 @@
             margin-top: 15px;
             margin-right: 10px;
         }
-        /* Hide default HTML checkbox */
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            -webkit-transition: .4s;
-            transition: .4s;
-        }
-
-        input:checked + .slider {
-            background-color: #2196F3;
-        }
-
-        input:focus + .slider {
-            box-shadow: 0 0 1px #2196F3;
-        }
-
-        input:checked + .slider:before {
-            -webkit-transform: translateX(26px);
-            -ms-transform: translateX(26px);
-            transform: translateX(26px);
-        }
-        .top{
+        .firstTop{
             width: 80%;
             vertical-align: auto;
             position: relative;
@@ -95,8 +66,46 @@
             border: 2px solid black;
             margin: auto auto 20px;
         }
+        .secondTop{
+            width: 80%;
+            vertical-align: auto;
+            position: relative;
+            height: 50px;
+            padding: 20px 5%;
+            margin: auto auto 20px;
+        }
+        .menu{
+            width: 40px;
+            height: 40px;
+            padding: 3px 5px;
+            margin-left: 0;
+            margin-right: 10px;
+            float: left;
+            background: none;
+            border: none;
+        }
+        .search{
+            border: none;
+            background: none;
+            float: left;
+            padding-left: 4px;
+            padding-top: 3px;
+            height: 40px;
+            width: 40px;
+            opacity: 1;
+        }
+        .searchBar{
+            width: 125%;
+            padding-left: 4px;
+            padding-top: 10px;
+            position: center;
+            background: gray;
+            float: inside;
+        }
         .user{
             float: right;
+            display: inline-block;
+            wrap-option: nowrap;
         }
         .logout{
             border: none;
@@ -108,20 +117,78 @@
             width: 30px;
             opacity: 1;
             float: right;
+        }
+        .random{
+            border: none;
+            background: none;
+            padding-right: 0px;
+            padding-top: 3px;
+            margin-top: 10px;
+            height: 30px;
+            width: 30px;
+            opacity: 1;
+            float: right;
+        }
+        .searchWrap{
+            height: 20px;
+            width: 70%;
 
+            padding-top: 13px;
+            padding-left: 10px;
+            float: left;
         }
         #myMap{
             alignment: right;
+            position: relative;
+        }
+        .def{
+            width: 5%;
+            height: 3%;
+            float: left;
+            margin-right: -4.8%;
+            padding-right: 0;
+            border: none;
+            background: none;
+        }
+        .logout_form{
+            float: right;
+        }
+        .dropdown-content{
+            border: 2px solid black;
+            width: 100%;
+            height: 400px;
+            float: left;
+            margin-left: -5.6%;
+            margin-top: 6%;
+            padding: 0;
+            position: absolute;
+            background-color: lightgray;
+            display: none;
+        }
+        .bottom{
+            position: fixed;
+            bottom: 0;
         }
     </style>
-    <script type='text/javascript'
-            src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap' async defer></script>
+    <script src='bingMaps.js' async defer type='text/javascript'></script>
 
-    <script type='text/javascript'>
-        var map, clusterLayer, infobox;
+    <script type='text/javascript'>function filterFunc() {
+        var x = document.getElementById("myMap");
+        var y = document.getElementById("dropdown");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+            y.style.opacity = "0"
+        } else {
+            x.style.display = "none";
+            y.style.opacity = "1";
+        }
 
-        function GetMap()
-        {
+        y.style.display = "block";
+    }
+
+    var map, clusterLayer, infobox;
+
+        function GetMap(){
             map = new Microsoft.Maps.Map('#myMap', {
                 credentials: 'AjTFwWawiKzPJHwxvYa13coYi9WhXcSwRALkpxzKLzzv_V7Euj2grSRG0HOABFk4',
                 mapTypeId: Microsoft.Maps.MapTypeId.aerial
@@ -131,7 +198,6 @@
                 var manager = new Microsoft.Maps.AutosuggestManager({ map: map });
                 manager.attachAutosuggest('#searchBox', '#searchBoxContainer', selectedSuggestion);
             });
-
             navigator.geolocation.getCurrentPosition(function (position) {
                 var selfLoc = new Microsoft.Maps.Location(
                     position.coords.latitude,
@@ -144,21 +210,21 @@
                 map.entities.push(selfpin);
 
 
-                //Center the map on the user's location.
-                map.setView({ center: selfLoc, zoom: 20 });
-            })
+
+                map.setView({ center: selfLoc, zoom: 15 });
+            },null,);
 
             infobox = new Microsoft.Maps.Infobox(map.getCenter(), { visible: true });
             infobox.setMap(map);
 
             Microsoft.Maps.loadModule("Microsoft.Maps.Clustering", function () {
-                //Create a clustering layer
+
                 clusterLayer = new Microsoft.Maps.ClusterLayer(createCustomPushpins(10), {
                     clusteredPinCallback: createCustomClusterPushpins,
                     callback: createPushpinList
                 });
 
-                //Add a click event to the clustering layer.
+
                 Microsoft.Maps.Events.addHandler(clusterLayer, 'click', pushpinClicked);
 
                 map.layers.insert(clusterLayer);
@@ -166,11 +232,11 @@
         }
 
         function createCustomPushpins(size) {
-            //Generate 100 random pushpins within the map bounds.
+
             var pins = Microsoft.Maps.TestDataGenerator.getPushpins(size, map.getBounds());
 
             for (var i = 0; i < size; i++) {
-                //Create a title for each pushpin.
+
                 pins[i].setOptions({ title: 'Pushpin #' + i });
             }
 
@@ -178,52 +244,50 @@
         }
 
         function createCustomClusterPushpins(cluster) {
-            //Create a title for the cluster.
+
             cluster.setOptions({
                 title: 'Cluster of ' + cluster.containedPushpins.length + ' pins'
             });
         }
 
         function pushpinClicked(e) {
-            //Show an infobox when a pushpin is clicked.
+
             showInfobox(e.target);
         }
 
         function createPushpinList() {
-            //Create a list of displayed pushpins each time clustering layer updates.
+
 
             if (clusterLayer != null) {
                 infobox.setOptions({ visible: false });
 
-                //Get all pushpins that are currently displayed.
+
                 var data = clusterLayer.getDisplayedPushpins();
                 var output = [];
 
-                //Create a list of links for each pushpin that opens up the infobox for it.
+
                 for (var i = 0; i < data.length; i++) {
                     output.push("<a href='javascript:void(0);' onclick='showInfoboxByGridKey(", data[i].gridKey, ");'>");
                     output.push(data[i].getTitle(), "</a><br/>");
                 }
-
-                document.getElementById('listOfPins').innerHTML = output.join('');
             }
         }
 
         function showInfoboxByGridKey(gridKey) {
-            //Look up the cluster or pushpin by gridKey.
+
             var clusterPin = clusterLayer.getClusterPushpinByGridKey(gridKey);
 
-            //Show an infobox for the cluster or pushpin.
+
             showInfobox(clusterPin);
         }
 
         function showInfobox(pin) {
             var description = [];
 
-            //Check to see if the pushpin is a cluster.
+
             if (pin.containedPushpins) {
 
-                //Create a list of all pushpins that are in the cluster.
+
                 description.push('<div style="max-height:75px;overflow-y:auto;"><ul>');
                 for (var i = 0; i < pin.containedPushpins.length; i++) {
                     description.push('<li>', pin.containedPushpins[i].getTitle(), '</li>');
@@ -231,7 +295,7 @@
                 description.push('</ul></div>');
             }
 
-            //Display an infobox for the pushpin.
+
             infobox.setOptions({
                 title: pin.getTitle(),
                 location: pin.getLocation(),
@@ -242,18 +306,51 @@
     </script>
 </head>
 <body>
-<div class="top">
+<div class="firstTop">
     <bold>HOME</bold>
     <bold class="user">USERNAME
-        <button type="submit" class="logout" >
-            <img src="https://i.imgur.com/MKVEzDH.jpg" height=30px width=30px>
-        </button>
+        <form action="../../" class="logout_form">
+            <button type="submit" class="logout" >
+                <img src="https://i.imgur.com/MKVEzDH.jpg" height=30px width=30px>
+            </button>
+        </form>
+
     </bold>
 </div>
+<div class="secondTop">
+    <button onclick="filterFunc()" class="menu" >
+        <img src="https://i.imgur.com/WBLcq9x.png" height=30px width=30px>
+    </button>
+    <button type="submit" class="search" form="form1">
+        <img src="https://i.imgur.com/ezpOrMU.png" height=30px width=30px>
+    </button>
+    <form id="form1">
+    <div class="searchWrap">
+
+            <input type="text" name="restaurante" class="searchBar" width=100px height=25px required
+                   oninvalid="this.setCustomValidity('Introduza um nome de Restaurante')"
+                   oninput="this.setCustomValidity('')">
+    </div>
+    <button type="submit" class="random">
+        <img src="https://i.imgur.com/pyz8tob.png" height=30px width=30px>
+    </button>
+    <div id="dropdown" class="dropdown-content">
+        Filtrar Por:
+    </div>
+    </form>
+
+</div>
+
 <div class="container">
-    <div id="myMap" style="width:500px; height:500px;"></div>
-    <br />
-    <div id="listOfPins" style="position: center; max-height:250px;width:250px;overflow-y:scroll;"></div>
+    <div id="myMap" style="position:center; width:100%; height:400px;"></div>
+    <div class="bottom">
+    <form action="/home/settings">
+        <button class="def">
+            <img class="settings" src="https://i.imgur.com/2HWyfdA.png">
+        </button>
+    </form>
+    <img class="logo" src="https://i.imgur.com/teflePh.png">
+    </div>
 </div>
 </body>
 </html>

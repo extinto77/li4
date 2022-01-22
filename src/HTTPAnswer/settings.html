@@ -188,17 +188,22 @@
             float: right;
 
         }
+        .logout_form{
+            float: right;
+        }
     </style>
 </head>
 
 <body>
     <div class="top">
         <bold>DEFINIÇÕES</bold>
+        <form action="../../" class="logout_form">
         <bold class="user">USERNAME
-        <button type="submit" class="logout" >
+        <button type="submit" class="logout">
             <img src="https://i.imgur.com/MKVEzDH.jpg" height=30px width=30px>
         </button>
         </bold>
+        </form>
 
     </div>
     <div class="container">
@@ -249,10 +254,15 @@
             </label>
         </div>
         <div>
-        <bold>ELIMINAR CONTA</bold>
-        <button type = "submit" class="elimina">
-            <img class="lixo" src="https://i.imgur.com/YpcUx5n.png" height=25px width=auto/>
-        </button>
+
+
+        <form id="elimina" method="post">
+            <input type="hidden" name="eliminaConta" value="elimina">
+            <bold>ELIMINAR CONTA</bold>
+            <button type = "submit" class="elimina" form="elimina">
+                <img class="lixo" src="https://i.imgur.com/YpcUx5n.png" height=25px width=auto/>
+            </button>
+        </form>
 
         </div>
     </div>
