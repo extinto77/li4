@@ -19,12 +19,30 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 
 public class Server {
     public static void main(String[] args) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName("localhost"), 8080), 5);
+        Enumeration en = NetworkInterface.getNetworkInterfaces();
+        String ip = "";
+        while(en.hasMoreElements())
+        {
+            NetworkInterface n = (NetworkInterface) en.nextElement();
+            Enumeration ee = n.getInetAddresses();
+            while (ee.hasMoreElements())
+            {
+                InetAddress i = (InetAddress) ee.nextElement();
+                if(i instanceof Inet4Address && !i.equals(Inet4Address.getByName("127.0.0.1"))){
+                    ip = i.getHostAddress();
+                    System.out.println("The Server's IP is:\n\t"+ip);
+                }
 
+            }
+        }
+        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName(ip), 8080), 10);
+        System.out
+                .println(server.getAddress().toString());
         AuthenticatorTest authenticatorHome = new AuthenticatorTest("/home");
 
         // Login requests
