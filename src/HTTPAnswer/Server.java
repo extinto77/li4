@@ -32,7 +32,7 @@ public class Server {
         }
 
         // ACEDER AO SERVIDOR COM O VALOR DO IP EM VEZ DE "localhost"
-        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName("localhost"), 8080), 5);
+        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName(ip), 8080), 5);
 
         Autenticador autenticador=new Autenticador("/home");
 
