@@ -154,24 +154,60 @@
             float: right;
         }
         .dropdown-content{
-            border: 2px solid black;
             width: 100%;
-            height: 400px;
+            height: 270px;
+            padding: 5%;
             float: left;
-            margin-left: -5.6%;
-            margin-top: 6%;
-            padding: 0;
-            position: absolute;
-            background-color: lightgray;
-            display: none;
+            horiz-align: center;
+            margin-top: 2.5%;
+            margin-left: -5%;
+            background-color: whitesmoke;
+            opacity: 0;
         }
         .bottom{
             position: fixed;
             bottom: 0;
         }
+        #nacionalidade{
+            padding: 2%;
+        }
+        .check{
+            margin-top: 1%;
+            margin-left: 10%;
+        }
+        #topCheck{
+            margin-top: 2%;
+            margin-bottom: 2%;
+        }
+        #botCheck{
+
+        }
+        .chk_b{
+            height: 15px;
+            width: 15px;
+        }
+
     </style>
     <script src='bingMaps.js' async defer type='text/javascript'></script>
-
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+    <script>
+        $( function() {
+            $( "#slider-range" ).slider({
+                range: true,
+                min: 0,
+                max: 500,
+                values: [ 75, 300 ],
+                slide: function( event, ui ) {
+                    $( "#amount" ).val(ui.values[ 0 ]+ "€" + " - " + ui.values[ 1 ] +"€");
+                }
+            });
+            $( "#amount" ).val( $( "#slider-range" ).slider( "values", 0 ) + "€" +
+                " - " + $( "#slider-range" ).slider( "values", 1 ) + "€" );
+        } );
+    </script>
     <script type='text/javascript'>function filterFunc() {
         var x = document.getElementById("myMap");
         var y = document.getElementById("dropdown");
@@ -182,8 +218,6 @@
             x.style.display = "none";
             y.style.opacity = "1";
         }
-
-        y.style.display = "block";
     }
 
     var map, clusterLayer, infobox;
@@ -212,7 +246,7 @@
 
 
                 map.setView({ center: selfLoc, zoom: 15 });
-            },null,);
+            });
 
             infobox = new Microsoft.Maps.Infobox(map.getCenter(), { visible: true });
             infobox.setMap(map);
@@ -335,7 +369,44 @@
         <img src="https://i.imgur.com/pyz8tob.png" height=30px width=30px>
     </button>
     <div id="dropdown" class="dropdown-content">
-        Filtrar Por:
+        <b>Filtrar Por:</b>
+        <div id="nacionalidade">
+            Nacionalidade
+            <div id="topCheck">
+            <label class="check">
+                CHINÊS
+            <input type="checkbox" id="chines" checked class="chk_b">
+            </label>
+            <label class="check">
+                MEXICANO
+                <input type="checkbox" id="mexicano" checked class="chk_b">
+            </label>
+            <label class="check">
+                ITALIANO
+                <input type="checkbox" id="italiano" checked class="chk_b">
+            </label>
+            </div>
+            <div id="botCheck">
+            <label class="check">
+                JAPONÊS
+                <input type="checkbox" id="japones" checked class="chk_b">
+            </label>
+            <label class="check">
+                ESPANHOL
+                <input type="checkbox" id="espanhol" checked class="chk_b">
+            </label>
+            <label class="check">
+                TURCO
+                <input type="checkbox" id="turco" checked class="chk_b">
+            </label>
+            </div>
+        </div>
+        <p>
+            <label for="amount">Preço:</label>
+            <input type="text" id="amount" readonly style="border:0; color:#7d7272; font-weight:bold;">
+        </p>
+
+        <div id="slider-range"></div>
     </div>
     </form>
 
