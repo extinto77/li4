@@ -37,12 +37,13 @@
             opacity: 0.7;
         }
         img.logo{
+            position: fixed;
             width: 7%;
             height: auto;
             left: 50%;
             right: 50%;
-            padding-top: 20px;
-            margin-left: auto;
+            padding-top: 0;
+            margin-left: -3.4%;
             margin-right: auto;
             display: block;
         }
@@ -138,6 +139,7 @@
         }
         #myMap{
             alignment: right;
+            position: relative;
         }
         .def{
             width: 5%;
@@ -151,11 +153,74 @@
         .logout_form{
             float: right;
         }
+        .dropdown-content{
+            width: 100%;
+            height: 270px;
+            padding: 5%;
+            float: left;
+            horiz-align: center;
+            margin-top: 2.5%;
+            margin-left: -5%;
+            background-color: whitesmoke;
+            opacity: 0;
+        }
+        .bottom{
+            position: fixed;
+            bottom: 0;
+        }
+        #nacionalidade{
+            padding: 2%;
+        }
+        .check{
+            margin-top: 1%;
+            margin-left: 10%;
+        }
+        #topCheck{
+            margin-top: 2%;
+            margin-bottom: 2%;
+        }
+        #botCheck{
+
+        }
+        .chk_b{
+            height: 15px;
+            width: 15px;
+        }
+
     </style>
     <script src='bingMaps.js' async defer type='text/javascript'></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+    <script>
+        $( function() {
+            $( "#slider-range" ).slider({
+                range: true,
+                min: 0,
+                max: 500,
+                values: [ 75, 300 ],
+                slide: function( event, ui ) {
+                    $( "#amount" ).val(ui.values[ 0 ]+ "€" + " - " + ui.values[ 1 ] +"€");
+                }
+            });
+            $( "#amount" ).val( $( "#slider-range" ).slider( "values", 0 ) + "€" +
+                " - " + $( "#slider-range" ).slider( "values", 1 ) + "€" );
+        } );
+    </script>
+    <script type='text/javascript'>function filterFunc() {
+        var x = document.getElementById("myMap");
+        var y = document.getElementById("dropdown");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+            y.style.opacity = "0"
+        } else {
+            x.style.display = "none";
+            y.style.opacity = "1";
+        }
+    }
 
-    <script type='text/javascript'>
-        var map, clusterLayer, infobox;
+    var map, clusterLayer, infobox;
 
         function GetMap(){
             map = new Microsoft.Maps.Map('#myMap', {
@@ -167,7 +232,6 @@
                 var manager = new Microsoft.Maps.AutosuggestManager({ map: map });
                 manager.attachAutosuggest('#searchBox', '#searchBoxContainer', selectedSuggestion);
             });
-
             navigator.geolocation.getCurrentPosition(function (position) {
                 var selfLoc = new Microsoft.Maps.Location(
                     position.coords.latitude,
@@ -240,8 +304,6 @@
                     output.push("<a href='javascript:void(0);' onclick='showInfoboxByGridKey(", data[i].gridKey, ");'>");
                     output.push(data[i].getTitle(), "</a><br/>");
                 }
-
-                document.getElementById('listOfPins').innerHTML = output.join('');
             }
         }
 
@@ -290,31 +352,76 @@
     </bold>
 </div>
 <div class="secondTop">
-    <button type="submit" class="menu" >
+    <button onclick="filterFunc()" class="menu" >
         <img src="https://i.imgur.com/WBLcq9x.png" height=30px width=30px>
     </button>
     <button type="submit" class="search" form="form1">
         <img src="https://i.imgur.com/ezpOrMU.png" height=30px width=30px>
     </button>
+    <form id="form1">
     <div class="searchWrap">
-        <form id="form1">
+
             <input type="text" name="restaurante" class="searchBar" width=100px height=25px required
                    oninvalid="this.setCustomValidity('Introduza um nome de Restaurante')"
                    oninput="this.setCustomValidity('')">
-        </form>
     </div>
     <button type="submit" class="random">
         <img src="https://i.imgur.com/pyz8tob.png" height=30px width=30px>
     </button>
+    <div id="dropdown" class="dropdown-content">
+        <b>Filtrar Por:</b>
+        <div id="nacionalidade">
+            Nacionalidade
+            <div id="topCheck">
+            <label class="check">
+                CHINÊS
+            <input type="checkbox" id="chines" checked class="chk_b">
+            </label>
+            <label class="check">
+                MEXICANO
+                <input type="checkbox" id="mexicano" checked class="chk_b">
+            </label>
+            <label class="check">
+                ITALIANO
+                <input type="checkbox" id="italiano" checked class="chk_b">
+            </label>
+            </div>
+            <div id="botCheck">
+            <label class="check">
+                JAPONÊS
+                <input type="checkbox" id="japones" checked class="chk_b">
+            </label>
+            <label class="check">
+                ESPANHOL
+                <input type="checkbox" id="espanhol" checked class="chk_b">
+            </label>
+            <label class="check">
+                TURCO
+                <input type="checkbox" id="turco" checked class="chk_b">
+            </label>
+            </div>
+        </div>
+        <p>
+            <label for="amount">Preço:</label>
+            <input type="text" id="amount" readonly style="border:0; color:#7d7272; font-weight:bold;">
+        </p>
+
+        <div id="slider-range"></div>
+    </div>
+    </form>
+
 </div>
+
 <div class="container">
     <div id="myMap" style="position:center; width:100%; height:400px;"></div>
+    <div class="bottom">
     <form action="/home/settings">
         <button class="def">
             <img class="settings" src="https://i.imgur.com/2HWyfdA.png">
         </button>
     </form>
     <img class="logo" src="https://i.imgur.com/teflePh.png">
+    </div>
 </div>
 </body>
 </html>
