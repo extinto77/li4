@@ -3,22 +3,12 @@ package HTTPAnswer;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpPrincipal;
 import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.Authenticator;
-import com.sun.net.httpserver.BasicAuthenticator;
-import com.sun.net.httpserver.Authenticator.Retry;
 
-import DataBase.ClienteDAO;
-import DataBase.Tables;
-import Exceptions.BDFailedConnection;
-import Exceptions.NoMatch;
 
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -42,37 +32,28 @@ public class Server {
         }
 
         // ACEDER AO SERVIDOR COM O VALOR DO IP EM VEZ DE "localhost"
-        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName(ip), 8080), 5);
+        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName("localhost"), 8080), 5);
 
-        AuthenticatorTest authenticatorHome = new AuthenticatorTest("/home");
+        Autenticador autenticador=new Autenticador("/home");
 
         // Login requests
         HttpContext loginContext = server.createContext("/home/login", exchange -> {
             System.out.println("1");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-
                 Server.sendFile("Login", h, exchange);
-            } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
-                try{
-                    redirect("/../home","Home",0,h,exchange,200);
-                } catch (IOException e) {
-                    redirect("/../index","Index",0,h,exchange,200);
-                }
+            }
+            else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+                autenticador.autenticar(exchange);
             }
         });
 
         // Index requests
         HttpContext indexContext = server.createContext("/", exchange -> {
-            System.out.println("2");
+            System.out.println("index");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                if(exchange.getRequestURI().toString().equals("/bingMaps.js")){
-                    Server.sendFileJS("bingMaps",h,exchange);
-                }else{
-                    Server.sendFile("index", h, exchange);
-                }
-
+                Server.sendFile("index", h, exchange);
             }
         });
 
@@ -102,6 +83,9 @@ public class Server {
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("home", h, exchange);
             }
+            else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+                Server.sendFile("home", h, exchange);
+            }
         });
 
         HttpContext homeSettingsContext = server.createContext("/home/settings", exchange -> {
@@ -116,11 +100,6 @@ public class Server {
                 System.out.println(exchange.getPrincipal().getUsername());
             }
         });
-
-        // homeContext.setAuthenticator(new AuthenticatorATypical("/home", dao));
-        homeContext.setAuthenticator(authenticatorHome);
-        loginContext.setAuthenticator(authenticatorHome);
-
         CookieHandler.setDefault(new CookieManager());
         server.start();
     }
@@ -206,91 +185,5 @@ public class Server {
             res[i] = items[i].split("=")[1];
         }
         return res;
-    }
-}
-
-class AuthenticatorATypical extends BasicAuthenticator {
-    private ClienteDAO dao;
-
-    public AuthenticatorATypical(String realm, ClienteDAO dao) {
-        super(realm);
-        this.dao = dao;
-    }
-
-    @Override
-    public com.sun.net.httpserver.Authenticator.Result authenticate(com.sun.net.httpserver.HttpExchange t) {
-        Authenticator.Result result;
-        if(t.getHttpContext().getPath().equalsIgnoreCase("home/login")){
-            if(t.getRequestMethod().equalsIgnoreCase("get")) {
-                result = new Success(new HttpPrincipal("placeholderUser", "/login"));
-            }
-            else if(t.getRequestMethod().equalsIgnoreCase("post")){
-                BufferedReader bf = new BufferedReader(new InputStreamReader(t.getRequestBody()));
-                try{
-                    String[] email_pass = Server.divideMessage(bf);
-                    if(checkCredentials(email_pass[0],email_pass[1])){
-                        result=new Success(new HttpPrincipal(email_pass[0],"/home"));
-                    }
-                    else result=new Failure(401);
-                } catch (IOException e) {
-                    result=new Failure(500);
-                }
-            }
-            else result = super.authenticate(t);
-        }
-        else{
-            result = super.authenticate(t);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean checkCredentials(String user, String pass) {
-        try {
-            return dao.getByUsername(user).getPassword().equals(pass);
-        } catch (BDFailedConnection | NoMatch e) {
-            return false;
-        }
-    }
-}
-
-class AuthenticatorTest extends BasicAuthenticator {
-    public AuthenticatorTest(String realm) {
-        super(realm);
-    }
-
-
-    @Override
-    public com.sun.net.httpserver.Authenticator.Result authenticate(com.sun.net.httpserver.HttpExchange t) {
-        Authenticator.Result result;
-        if(t.getHttpContext().getPath().equalsIgnoreCase("/home/login")){
-            if(t.getRequestMethod().equalsIgnoreCase("get")) {
-                result = new Success(new HttpPrincipal("placeholderUser", "/home"));
-            }
-            else if(t.getRequestMethod().equalsIgnoreCase("post")){
-                BufferedReader bf = new BufferedReader(new InputStreamReader(t.getRequestBody()));
-                try{
-                    String[] email_pass = Server.divideMessage(bf);
-                    if(checkCredentials(email_pass[0],email_pass[1])){
-                        result=new Success(new HttpPrincipal(email_pass[0],"/home"));
-                    }
-                    else result=new Failure(401);
-                } catch (IOException e) {
-                    result=new Failure(500);
-                }
-            }
-            else result = new Success(new HttpPrincipal("placeholderUser", "/home"));
-        }
-        else{
-            result = super.authenticate(t);
-        }
-        return result;
-    }
-
-
-
-    @Override
-    public boolean checkCredentials(String user, String pass) {
-        return user.equals("teste") && pass.equals("1234");
     }
 }
