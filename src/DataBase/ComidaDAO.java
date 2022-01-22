@@ -32,10 +32,10 @@ public class ComidaDAO {
     }
 
     public int addComida(Comida c) throws BDFailedConnection, AddingError {
-        PreparedStatement ps = JDBC.codLine(this.con, "Insert into comida(id,vegetariano,nome) values (?,?,?)");
+        PreparedStatement ps = JDBC.codLine(this.con, "Insert into comida(vegetariano,nome) values (?,?)");
         if(ps != null){
             try {
-                ps.setInt(1,c.getId());
+                // id autoincrements
                 ps.setShort(2,short2boolean(c.getVegetariano()));
                 ps.setString(3,c.getNome());
                 ps.executeUpdate();
