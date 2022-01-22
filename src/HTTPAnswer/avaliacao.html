@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Avaliação</title>
+    <link rel="icon" href="https://i.imgur.com/teflePh.png"
+          type="image/x-icon">
+    <style>
+        Body {
+            font-family: Calibri, Helvetica, sans-serif;
+            overflow: hidden;
+            background-color: white;
+            min-height: 100%;
+        }
+        button {
+            background-color: #cccccc;
+            width: 100%;
+            color: rgb(0, 0, 0);
+            padding: 15px;
+            margin: 10px 0px;
+            border: 2px solid rgb(0, 0, 0);
+            cursor: pointer;
+        }
+        input{
+            width: 100%;
+            margin: 8px 0;
+            padding: 12px 20px;
+            display: inline-block;
+            border: 2px solid rgb(0, 0, 0);
+            box-sizing: border-box;
+            position:relative;
+            height: 20%;
+        }
+
+        button:hover {
+            opacity: 0.7;
+        }
+
+        .container {
+            width: 80%;
+            padding: 3% 5%;
+            background-color: rgba(204, 204, 204, 0.7);
+            margin:auto;
+            vertical-align: auto;
+            position: relative;
+            height: 450px;
+        }
+
+        .flex-parent {
+            display: flex;
+            height: 100%;
+        }
+        .flex-child {
+            margin: 5px;
+            flex: 1;
+            border: 2px solid black;
+            height: 300px;
+            overflow: hidden;
+            background-color: white;
+            padding: 10px;
+        }
+        .borderless {
+            height: 80%;
+            border: none;
+        }
+        .def{
+            display: inline-block;
+            background-size: cover;
+        }
+        .def_text {
+            float: right;
+        }
+        .top{
+            width: 80%;
+            vertical-align: auto;
+            position: relative;
+            height: auto;
+            padding: 20px 5%;
+            border: 2px solid black;
+            margin: auto auto 20px;
+        }
+        .user{
+            float: right;
+        }
+        .logout{
+            border: none;
+            background: none;
+            padding-right: 0px;
+            padding-top: 0px;
+            margin-top: -7px;
+            height: 30px;
+            width: 30px;
+            opacity: 1;
+            float: right;
+
+        }
+        .logout_form{
+            float: right;
+        }
+        .user_image{
+            height: 100px;
+            width: auto;
+            border: 2px solid black;
+            background-color: mediumpurple;
+            margin-right: 20px;
+        }
+        .com{
+            height: 100%;
+            width: 100%;
+            float: bottom;
+            border: none;
+        }
+        textarea {
+            height: 100%;
+            resize: none;
+            outline: none;
+        }
+        .rate {
+            float: left;
+            height: 46px;
+            padding-left: 11%;
+        }
+        .rate:not(:checked) > input {
+            position:absolute;
+            top:-9999px;
+        }
+        .rate:not(:checked) > label {
+            float:right;
+            width:1em;
+            overflow:hidden;
+            white-space:nowrap;
+            cursor:pointer;
+            font-size:30px;
+            color:#ccc;
+        }
+        .rate:not(:checked) > label:before {
+            content: '★ ';
+        }
+        .rate > input:checked ~ label {
+            color: #ffc700;
+        }
+        .rate:not(:checked) > label:hover,
+        .rate:not(:checked) > label:hover ~ label {
+            color: #deb217;
+        }
+        .rate > input:checked + label:hover,
+        .rate > input:checked + label:hover ~ label,
+        .rate > input:checked ~ label:hover,
+        .rate > input:checked ~ label:hover ~ label,
+        .rate > label:hover ~ input:checked ~ label {
+            color: #c59b08;
+        }
+        .send{
+            float: right;
+            width: 10%;
+            margin-top: -1%;
+            margin-right: 0.4%;
+        }
+        img.logo{
+            width: 7%;
+            height: auto;
+            padding-top: 20px;
+            padding-left: 0;
+            margin-left: 47%;
+            margin-right: auto;
+            display: grid;
+        }
+        img.settings{
+            float: left;
+            width: 30px;
+            height: auto;
+            resize: none;
+            left: 100%;
+            display: block;
+            margin-top: 15px;
+            margin-right: 10px;
+        }
+        .def2{
+            width: 5%;
+            height: 3%;
+            float: left;
+            margin-left: 5%;
+            margin-right: -5%;
+            padding-right: 0;
+            border: none;
+            background: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="top">
+    <bold>AVALIAÇÃO</bold>
+    <form action="../../" class="logout_form">
+        <bold class="user">USERNAME
+            <button type="submit" class="logout">
+                <img src="https://i.imgur.com/MKVEzDH.jpg" height=30px width=30px>
+            </button>
+        </bold>
+    </form>
+
+</div>
+<div class="container">
+    <div class="def">
+        <div class="def_text">
+            <h2>AVALIAÇÃO</h2>
+        </div>
+    </div>
+    <form class="borderless" method="post">
+
+        <div class="flex-parent">
+            <img src="https://i.imgur.com/710mXhY.png" class="user_image">
+            <div class="flex-child">
+                <label>
+                    <b>USERNAME</b>
+                    <textarea placeholder="Comentário" name="comentario" class="com"
+                              oninvalid="this.setCustomValidity('Introduza o seu nome')"
+                              oninput="this.setCustomValidity('')" ></textarea>
+                </label>
+            </div>
+        </div>
+        <div class="rate">
+            <input type="radio" id="star5" name="rate" value="5" />
+            <label for="star5" title="text">5 stars</label>
+            <input type="radio" id="star4" name="rate" value="4" />
+            <label for="star4" title="text">4 stars</label>
+            <input type="radio" id="star3" name="rate" value="3" />
+            <label for="star3" title="text">3 stars</label>
+            <input type="radio" id="star2" name="rate" value="2" />
+            <label for="star2" title="text">2 stars</label>
+            <input type="radio" id="star1" name="rate" value="1" />
+            <label for="star1" title="text">1 star</label>
+        </div>
+        <button type="submit" class="send">Avaliar</button>
+    </form>
+</div>
+<form action="/home/settings">
+    <button class="def2">
+        <img class="settings" src="https://i.imgur.com/2HWyfdA.png">
+    </button>
+</form>
+<img class="logo" src="https://i.imgur.com/teflePh.png">
+</body>
+</html>

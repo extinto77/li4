@@ -37,12 +37,13 @@
             opacity: 0.7;
         }
         img.logo{
+            position: fixed;
             width: 7%;
             height: auto;
             left: 50%;
             right: 50%;
-            padding-top: 20px;
-            margin-left: auto;
+            padding-top: 0;
+            margin-left: -3.4%;
             margin-right: auto;
             display: block;
         }
@@ -138,6 +139,7 @@
         }
         #myMap{
             alignment: right;
+            position: relative;
         }
         .def{
             width: 5%;
@@ -151,11 +153,40 @@
         .logout_form{
             float: right;
         }
+        .dropdown-content{
+            border: 2px solid black;
+            width: 100%;
+            height: 400px;
+            float: left;
+            margin-left: -5.6%;
+            margin-top: 6%;
+            padding: 0;
+            position: absolute;
+            background-color: lightgray;
+            display: none;
+        }
+        .bottom{
+            position: fixed;
+            bottom: 0;
+        }
     </style>
     <script src='bingMaps.js' async defer type='text/javascript'></script>
 
-    <script type='text/javascript'>
-        var map, clusterLayer, infobox;
+    <script type='text/javascript'>function filterFunc() {
+        var x = document.getElementById("myMap");
+        var y = document.getElementById("dropdown");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+            y.style.opacity = "0"
+        } else {
+            x.style.display = "none";
+            y.style.opacity = "1";
+        }
+
+        y.style.display = "block";
+    }
+
+    var map, clusterLayer, infobox;
 
         function GetMap(){
             map = new Microsoft.Maps.Map('#myMap', {
@@ -167,7 +198,6 @@
                 var manager = new Microsoft.Maps.AutosuggestManager({ map: map });
                 manager.attachAutosuggest('#searchBox', '#searchBoxContainer', selectedSuggestion);
             });
-
             navigator.geolocation.getCurrentPosition(function (position) {
                 var selfLoc = new Microsoft.Maps.Location(
                     position.coords.latitude,
@@ -182,7 +212,7 @@
 
 
                 map.setView({ center: selfLoc, zoom: 15 });
-            });
+            },null,);
 
             infobox = new Microsoft.Maps.Infobox(map.getCenter(), { visible: true });
             infobox.setMap(map);
@@ -240,8 +270,6 @@
                     output.push("<a href='javascript:void(0);' onclick='showInfoboxByGridKey(", data[i].gridKey, ");'>");
                     output.push(data[i].getTitle(), "</a><br/>");
                 }
-
-                document.getElementById('listOfPins').innerHTML = output.join('');
             }
         }
 
@@ -290,31 +318,39 @@
     </bold>
 </div>
 <div class="secondTop">
-    <button type="submit" class="menu" >
+    <button onclick="filterFunc()" class="menu" >
         <img src="https://i.imgur.com/WBLcq9x.png" height=30px width=30px>
     </button>
     <button type="submit" class="search" form="form1">
         <img src="https://i.imgur.com/ezpOrMU.png" height=30px width=30px>
     </button>
+    <form id="form1">
     <div class="searchWrap">
-        <form id="form1">
+
             <input type="text" name="restaurante" class="searchBar" width=100px height=25px required
                    oninvalid="this.setCustomValidity('Introduza um nome de Restaurante')"
                    oninput="this.setCustomValidity('')">
-        </form>
     </div>
     <button type="submit" class="random">
         <img src="https://i.imgur.com/pyz8tob.png" height=30px width=30px>
     </button>
+    <div id="dropdown" class="dropdown-content">
+        Filtrar Por:
+    </div>
+    </form>
+
 </div>
+
 <div class="container">
     <div id="myMap" style="position:center; width:100%; height:400px;"></div>
+    <div class="bottom">
     <form action="/home/settings">
         <button class="def">
             <img class="settings" src="https://i.imgur.com/2HWyfdA.png">
         </button>
     </form>
     <img class="logo" src="https://i.imgur.com/teflePh.png">
+    </div>
 </div>
 </body>
 </html>

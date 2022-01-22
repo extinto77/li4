@@ -112,8 +112,12 @@ public class Server {
             }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
                 BufferedReader bf = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
                 String[] info = divideMessage(bf);
-               // System.out.println(Arrays.toString(info));
-                System.out.println(exchange.getPrincipal().getUsername());
+                if(info[0].equals("elimina")){
+                    // ELIMINAR CONTA
+                    redirect("/../index","Index",0,h,exchange,200);
+                }
+
+
             }
         });
 
