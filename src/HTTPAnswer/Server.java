@@ -40,9 +40,10 @@ public class Server {
 
             }
         }
+
+        // ACEDER AO SERVIDOR COM O VALOR DO IP EM VEZ DE "localhost"
         HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName(ip), 8080), 10);
-        System.out
-                .println(server.getAddress().toString());
+
         AuthenticatorTest authenticatorHome = new AuthenticatorTest("/home");
 
         // Login requests
@@ -90,6 +91,13 @@ public class Server {
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("home", h, exchange);
+            }
+        });
+
+        HttpContext homeSettingsContext = server.createContext("/home/settings", exchange -> {
+            Headers h = exchange.getResponseHeaders();
+            if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                Server.sendFile("settings", h, exchange);
             }
         });
 
