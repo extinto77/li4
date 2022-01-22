@@ -42,14 +42,16 @@ public class Server {
         }
 
         // ACEDER AO SERVIDOR COM O VALOR DO IP EM VEZ DE "localhost"
-        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName(ip), 8080), 10);
+        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName(ip), 8080), 5);
 
         AuthenticatorTest authenticatorHome = new AuthenticatorTest("/home");
 
         // Login requests
         HttpContext loginContext = server.createContext("/home/login", exchange -> {
+            System.out.println("1");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+
                 Server.sendFile("Login", h, exchange);
             } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
                 try{
@@ -62,14 +64,21 @@ public class Server {
 
         // Index requests
         HttpContext indexContext = server.createContext("/", exchange -> {
+            System.out.println("2");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                Server.sendFile("index", h, exchange);
+                if(exchange.getRequestURI().toString().equals("/bingMaps.js")){
+                    Server.sendFileJS("bingMaps",h,exchange);
+                }else{
+                    Server.sendFile("index", h, exchange);
+                }
+
             }
         });
 
         // Register requests
         HttpContext registerContext = server.createContext("/home/registo", exchange -> {
+            System.out.println("3");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("Registo", h, exchange);
@@ -88,6 +97,7 @@ public class Server {
 
         //Home requests
         HttpContext homeContext = server.createContext("/home", exchange -> {
+            System.out.println("4");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("home", h, exchange);
@@ -95,9 +105,19 @@ public class Server {
         });
 
         HttpContext homeSettingsContext = server.createContext("/home/settings", exchange -> {
+            System.out.println("5");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("settings", h, exchange);
+            }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+                BufferedReader bf = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+                String[] info = divideMessage(bf);
+                if(info[0].equals("elimina")){
+                    // ELIMINAR CONTA
+                    redirect("/../index","Index",0,h,exchange,200);
+                }
+
+
             }
         });
 
@@ -109,8 +129,29 @@ public class Server {
         server.start();
     }
 
+    private static void sendFileJS(String bingMaps, Headers h, HttpExchange exchange) throws IOException {
+        String body = Server.JsText(bingMaps);
+        h.add("Content-Type", "text/javascript; charset=utf-8");
+        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+        exchange.sendResponseHeaders(200, bytes.length);
+        OutputStream os = exchange.getResponseBody();
+        os.write(bytes);
+        os.flush();
+        os.close();
+    }
+
     static public String HtmlText(String filename) throws IOException {
         File file = new File("src/HTTPAnswer/" + filename + ".html");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        StringBuilder sb = new StringBuilder();
+        String msg;
+        while ((msg = br.readLine()) != null)
+            sb.append(msg);
+        return sb.toString();
+    }
+
+    static public String JsText(String filename) throws IOException {
+        File file = new File("src/HTTPAnswer/" + filename + ".js");
         BufferedReader br = new BufferedReader(new FileReader(file));
         StringBuilder sb = new StringBuilder();
         String msg;
@@ -160,11 +201,9 @@ public class Server {
 
     public static String[] divideMessage(BufferedReader bf) throws IOException {
         StringBuilder msg = new StringBuilder();
-        bf.mark(256);
         while (bf.ready()) {
             msg.append(bf.readLine());
         }
-        bf.reset();
         String[] items = msg.toString().split("&");
         String[] res = new String[items.length];
         for (int i = 0; i < items.length; i++) {
