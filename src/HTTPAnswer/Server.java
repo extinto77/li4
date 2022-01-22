@@ -31,7 +31,7 @@ public class Server {
             }
         }
 
-        // ACEDER AO SERVIDOR COM O VALOR DO IP EM VEZ DE "localhost"
+        // ACEDER AO SERVIDOR COM O VALOR DO IP EM VEZ DE "localhost", e assim não funciona o login
         HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName(ip), 8080), 5);
 
         Autenticador autenticador=new Autenticador("/home");
