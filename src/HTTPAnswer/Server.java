@@ -16,36 +16,27 @@ import Exceptions.BDFailedConnection;
 import Exceptions.NoMatch;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.URLDecoder;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 
 public class Server {
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName("localhost"), 8080), 5);
 
         AuthenticatorTest authenticatorHome = new AuthenticatorTest("/home");
-        AuthenticatorTest authenticatorLogin = new AuthenticatorTest("/login");
 
         // Login requests
-        HttpContext loginContext = server.createContext("/login", exchange -> {
+        HttpContext loginContext = server.createContext("/home/login", exchange -> {
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("Login", h, exchange);
             } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
-                BufferedReader bf = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
                 try{
-                    String[] email_pass = Server.divideMessage(bf);
-                    if(authenticatorLogin.checkCredentials(email_pass[0], email_pass[1])){
-                        redirect("/../home","Home",0,h,exchange,200);
-                    }else {
-                        redirect("/../index","Index",0,h,exchange,200);
-                    }
+                    redirect("/../home","Home",0,h,exchange,200);
                 } catch (IOException e) {
-                    redirect("/../index","Index",0,h,exchange,205);
+                    redirect("/../index","Index",0,h,exchange,200);
                 }
             }
         });
@@ -59,7 +50,7 @@ public class Server {
         });
 
         // Register requests
-        HttpContext registerContext = server.createContext("/registo", exchange -> {
+        HttpContext registerContext = server.createContext("/home/registo", exchange -> {
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("Registo", h, exchange);
@@ -70,9 +61,9 @@ public class Server {
                 String email = URLDecoder.decode(info[4], StandardCharsets.UTF_8);
 
                 if (true /* || existsOnBD(email,numero,user) || */) {
-                    redirect("/../login","Login",0,h,exchange,200);
+                    redirect("/../home/login","Login",0,h,exchange,200);
                 }
-                else redirect("/../login","Login",0,h,exchange,200);
+                else redirect("/../index","Index",0,h,exchange,200);
             }
         });
 
@@ -80,16 +71,15 @@ public class Server {
         HttpContext homeContext = server.createContext("/home", exchange -> {
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-
-            } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
-
+                Server.sendFile("home", h, exchange);
             }
         });
 
         // homeContext.setAuthenticator(new AuthenticatorATypical("/home", dao));
         homeContext.setAuthenticator(authenticatorHome);
-        loginContext.setAuthenticator(authenticatorLogin);
+        loginContext.setAuthenticator(authenticatorHome);
 
+        CookieHandler.setDefault(new CookieManager());
         server.start();
     }
 
@@ -117,10 +107,23 @@ public class Server {
     public static void redirect(String path,String pagename,int delay,Headers h, HttpExchange exchange,int rCode) throws IOException {
         StringBuilder builder=new StringBuilder();
         builder.append("<!DOCTYPE HTML><html><head><title> Redirect to ").append(pagename).append(" </title>");
-        builder.append("<meta charset=\"UTF-8\"><meta http-equiv=\"refresh\" content=\"").append(delay).append(";url=.html\">");
+        builder.append("<meta charset=\"UTF-8\"><meta http-equiv=\"refresh\" content=\"").append(delay).append(";url=").append(path).append("\">");
         builder.append("</head><body>Será redirecionado para ").append(pagename).append("num instante.<br>");
         builder.append("Senão dor redirecionado, clique aqui:<a href=\"").append(path).append("\">click here</a>.</body></html>");
         h.add("Content-Type", "text/html; charset=utf-8");
+        List<String> cookies=exchange.getResponseHeaders().get("Set-Cookie");
+        if(cookies!=null){
+            StringBuilder cookieString= new StringBuilder();
+            boolean first=true;
+            for(String cookie:cookies){
+                if(!first){
+                    cookieString.append("; ");
+                }
+                else first=false;
+                cookieString.append(cookie);
+            }
+            h.add("Set-Cookie",cookieString.toString());
+        }
         byte[] bytes = builder.toString().getBytes(StandardCharsets.UTF_8);
         exchange.sendResponseHeaders(rCode, bytes.length);
         OutputStream os = exchange.getResponseBody();
@@ -131,9 +134,11 @@ public class Server {
 
     public static String[] divideMessage(BufferedReader bf) throws IOException {
         StringBuilder msg = new StringBuilder();
+        bf.mark(256);
         while (bf.ready()) {
             msg.append(bf.readLine());
         }
+        bf.reset();
         String[] items = msg.toString().split("&");
         String[] res = new String[items.length];
         for (int i = 0; i < items.length; i++) {
@@ -145,7 +150,6 @@ public class Server {
 
 class AuthenticatorATypical extends BasicAuthenticator {
     private ClienteDAO dao;
-    private String name;
 
     public AuthenticatorATypical(String realm, ClienteDAO dao) {
         super(realm);
@@ -155,7 +159,7 @@ class AuthenticatorATypical extends BasicAuthenticator {
     @Override
     public com.sun.net.httpserver.Authenticator.Result authenticate(com.sun.net.httpserver.HttpExchange t) {
         Authenticator.Result result;
-        if(t.getHttpContext().getPath().equalsIgnoreCase("/login")){
+        if(t.getHttpContext().getPath().equalsIgnoreCase("home/login")){
             if(t.getRequestMethod().equalsIgnoreCase("get")) {
                 result = new Success(new HttpPrincipal("placeholderUser", "/login"));
             }
@@ -166,20 +170,15 @@ class AuthenticatorATypical extends BasicAuthenticator {
                     if(checkCredentials(email_pass[0],email_pass[1])){
                         result=new Success(new HttpPrincipal(email_pass[0],"/home"));
                     }
-                    else result=new Retry(500);
+                    else result=new Failure(401);
                 } catch (IOException e) {
                     result=new Failure(500);
-
                 }
             }
-            else result = new Success(new HttpPrincipal("placeholderUser", "/login"));
+            else result = super.authenticate(t);
         }
         else{
             result = super.authenticate(t);
-            if (result instanceof Authenticator.Success) {
-                HttpPrincipal principal = ((Authenticator.Success) result).getPrincipal();
-                name = principal.getUsername();
-            }
         }
         return result;
     }
@@ -192,25 +191,20 @@ class AuthenticatorATypical extends BasicAuthenticator {
             return false;
         }
     }
-
-    private String getName(){
-        return name;
-    }
 }
 
 class AuthenticatorTest extends BasicAuthenticator {
-    private String name;
-
     public AuthenticatorTest(String realm) {
         super(realm);
     }
 
+
     @Override
     public com.sun.net.httpserver.Authenticator.Result authenticate(com.sun.net.httpserver.HttpExchange t) {
         Authenticator.Result result;
-        if(t.getHttpContext().getPath().equalsIgnoreCase("/login")){
+        if(t.getHttpContext().getPath().equalsIgnoreCase("/home/login")){
             if(t.getRequestMethod().equalsIgnoreCase("get")) {
-                result = new Success(new HttpPrincipal("placeholderUser", "/login"));
+                result = new Success(new HttpPrincipal("placeholderUser", "/home"));
             }
             else if(t.getRequestMethod().equalsIgnoreCase("post")){
                 BufferedReader bf = new BufferedReader(new InputStreamReader(t.getRequestBody()));
@@ -219,30 +213,23 @@ class AuthenticatorTest extends BasicAuthenticator {
                     if(checkCredentials(email_pass[0],email_pass[1])){
                         result=new Success(new HttpPrincipal(email_pass[0],"/home"));
                     }
-                    else result = new Success(new HttpPrincipal("placeholderUser", "/login"));
+                    else result=new Failure(401);
                 } catch (IOException e) {
                     result=new Failure(500);
                 }
             }
-            else result = new Success(new HttpPrincipal("placeholderUser", "/login"));
+            else result = new Success(new HttpPrincipal("placeholderUser", "/home"));
         }
         else{
             result = super.authenticate(t);
-            if (result instanceof Authenticator.Success) {
-                HttpPrincipal principal = ((Authenticator.Success) result).getPrincipal();
-                name = principal.getUsername();
-            }
         }
         return result;
     }
+
+
 
     @Override
     public boolean checkCredentials(String user, String pass) {
         return user.equals("teste") && pass.equals("1234");
     }
-
-    public String getName() {
-        return name;
-    }
-
 }
