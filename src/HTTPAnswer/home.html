@@ -55,38 +55,7 @@
             margin-top: 15px;
             margin-right: 10px;
         }
-        /* Hide default HTML checkbox */
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            -webkit-transition: .4s;
-            transition: .4s;
-        }
-
-        input:checked + .slider {
-            background-color: #2196F3;
-        }
-
-        input:focus + .slider {
-            box-shadow: 0 0 1px #2196F3;
-        }
-
-        input:checked + .slider:before {
-            -webkit-transform: translateX(26px);
-            -ms-transform: translateX(26px);
-            transform: translateX(26px);
-        }
-        .top{
+        .firstTop{
             width: 80%;
             vertical-align: auto;
             position: relative;
@@ -94,6 +63,42 @@
             padding: 20px 5%;
             border: 2px solid black;
             margin: auto auto 20px;
+        }
+        .secondTop{
+            width: 80%;
+            vertical-align: auto;
+            position: relative;
+            height: 50px;
+            padding: 20px 5%;
+            margin: auto auto 20px;
+        }
+        .menu{
+            width: 40px;
+            height: 40px;
+            padding: 3px 5px;
+            margin-left: 0;
+            margin-right: 10px;
+            float: left;
+            background: none;
+            border: none;
+        }
+        .search{
+            border: none;
+            background: none;
+            float: left;
+            padding-left: 4px;
+            padding-top: 3px;
+            height: 40px;
+            width: 40px;
+            opacity: 1;
+        }
+        .searchBar{
+            width: 125%;
+            padding-left: 4px;
+            padding-top: 10px;
+            position: center;
+            background: gray;
+            float: inside;
         }
         .user{
             float: right;
@@ -145,7 +150,7 @@
 
 
                 //Center the map on the user's location.
-                map.setView({ center: selfLoc, zoom: 20 });
+                map.setView({ center: selfLoc, zoom: 15 });
             })
 
             infobox = new Microsoft.Maps.Infobox(map.getCenter(), { visible: true });
@@ -242,13 +247,31 @@
     </script>
 </head>
 <body>
-<div class="top">
+<div class="firstTop">
     <bold>HOME</bold>
     <bold class="user">USERNAME
         <button type="submit" class="logout" >
             <img src="https://i.imgur.com/MKVEzDH.jpg" height=30px width=30px>
         </button>
     </bold>
+</div>
+<div class="secondTop">
+    <button type="submit" class="menu" >
+        <img src="https://i.imgur.com/WBLcq9x.png" height=30px width=30px>
+    </button>
+    <button type="submit" class="search" form="form1">
+        <img src="https://i.imgur.com/ezpOrMU.png" height=30px width=30px>
+    </button>
+    <div class="searchWrap">
+    <form id="form1">
+        <input type="text" name="restaurante" class="searchBar" width=100px height=25px required
+                 oninvalid="this.setCustomValidity('Introduza um nome de Restaurante')"
+                 oninput="this.setCustomValidity('')">
+    </form>
+    </div>
+    <button type="submit" class="random">
+        <img src="https://i.imgur.com/pyz8tob.png" height=30px width=30px>
+    </button>
 </div>
 <div class="container">
     <div id="myMap" style="width:500px; height:500px;"></div>
