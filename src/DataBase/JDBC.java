@@ -32,6 +32,16 @@ public class JDBC {
         return java.sql.Date.valueOf(ld);
     }
 
+    public static Tables iniciaBD() throws SQLException {
+        String url = "jdbc:mysql://localhost:3306/li4";
+        String user = "besta";
+        String password = "bestasmei1920";
+
+        Connection con = DriverManager.getConnection(url, user, password);
+
+        return new Tables(new AvaliacaoDAO(con), new ClienteDAO(con), new ComidaDAO(con), new RestauranteDAO(con));
+    }
+
     public static void main(String[] args) {
         String url = "jdbc:mysql://localhost:3306/li4";
         String user = "besta";
