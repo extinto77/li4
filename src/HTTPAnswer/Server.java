@@ -28,7 +28,7 @@ public class Server {
 
             Autenticador autenticador=new Autenticador(bd.getCli(),"/home");
 
-            // Login requests
+            //Login requests
             HttpContext loginContext = server.createContext("/home/login", exchange -> {
                 System.out.println("1");
                 Headers h = exchange.getResponseHeaders();
@@ -40,7 +40,7 @@ public class Server {
                 }
             });
 
-            // Index requests
+            //Index requests
             HttpContext indexContext = server.createContext("/", exchange -> {
                 System.out.println("index");
                 Headers h = exchange.getResponseHeaders();
@@ -67,7 +67,7 @@ public class Server {
                     String nome = info[0], numero = info[1], data_nas = info[2], user = info[3], pass = info[5];
                     String email = URLDecoder.decode(info[4], StandardCharsets.UTF_8);
 
-                    if (true /* || existsOnBD(email,numero,user) || */) {
+                    if (bd.getCli().existsOnBD(email,numero,user)) {
                         redirect("/../home/login","Login",0,h,exchange,200);
                     }
                     else redirect("/../index","Index",0,h,exchange,200);
