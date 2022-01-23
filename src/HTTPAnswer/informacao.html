@@ -106,18 +106,6 @@
             width: 80%;
             position: relative;
         }
-        .round {
-            border-radius: 25px;
-            border: none;
-            background: #9aa499;
-            padding: 15px;
-            width: 100px;
-            height: 20px;
-            margin-left: 10%;
-            margin-bottom: 1%;
-            margin-top: -5.5%;
-            float: right;
-        }
         .user_image{
             height: 100px;
             width: auto;
@@ -140,6 +128,30 @@
             margin-left: -0.7%;
             padding: 4%;
             width: 93%;
+        }
+        .round {
+            border-radius: 25px;
+            border: none;
+            background: #9aa499;
+            padding: 15px;
+            width: 100px;
+            height: 20px;
+            margin-left: 10%;
+            margin-bottom: 1%;
+            margin-top: -5.5%;
+            float: right;
+        }
+        #round_2{
+            border: none;
+            background: none;
+            text-align: center;
+            image-orientation: from-image;
+            font-size: 16px;
+            width: 6%;
+            float: right;
+            border-radius: 50%;
+            padding: 0;
+            margin-top: -8%;
         }
     </style>
 </head>
@@ -172,7 +184,11 @@
 <div class="container">
         <div class="def_text">
             <h2 style="margin-bottom: 4%">AVALIAÇÕES</h2>
-                <img src="https://i.imgur.com/710mXhY.png" id="ok" class="user_image">
+            <form action="/home/avaliacao">
+            <button id="round_2" type="submit"><img src="https://i.imgur.com/lNoKGgE.png" style="width: 100%"></button>
+            </form>
+            <div id="avaliacoes">
+                <img src="https://i.imgur.com/710mXhY.png" class="user_image">
                 <div class="flex-child">
                     <label>
                         <b>USERNAME</b>
@@ -188,8 +204,8 @@
                         </p>
                     </label>
                 </div>
-
             </div>
+        </div>
 </div>
 <div style="margin: 120px">
 </div>
@@ -203,5 +219,15 @@
         <img class="logo" src="https://i.imgur.com/teflePh.png">
     </div>
 </div>
+<script type="text/javascript">
+    function RandomColor() {
+        var element = document.getElementsByClassName("user_image");
+
+        for(var i = 0; i < element.length; i++){
+            element.item(i).style.backgroundColor="#"+Math.floor(Math.random()*16777215).toString(16);
+        }
+    }
+    RandomColor();
+</script>
 </body>
 </html>

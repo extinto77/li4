@@ -1,5 +1,7 @@
 package HTTPAnswer;
 
+import DataBase.JDBC;
+import DataBase.Tables;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
@@ -9,131 +11,124 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
 public class Server {
+
     public static void main(String[] args) throws IOException {
-        Enumeration en = NetworkInterface.getNetworkInterfaces();
-        String ip = "";
-        while(en.hasMoreElements())
-        {
-            NetworkInterface n = (NetworkInterface) en.nextElement();
-            Enumeration ee = n.getInetAddresses();
-            while (ee.hasMoreElements())
-            {
-                InetAddress i = (InetAddress) ee.nextElement();
-                if(i instanceof Inet4Address && !i.equals(Inet4Address.getByName("127.0.0.1"))){
-                    ip = i.getHostAddress();
-                    System.out.println("The Server's IP is:\n\t"+ip);
-                }
 
-            }
+        try {
+            //imprimeIP();
+            Tables bd = JDBC.iniciaBD();
+
+            HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 8080), 5);
+
+            Autenticador autenticador=new Autenticador(bd.getCli(),"/home");
+
+            // Login requests
+            HttpContext loginContext = server.createContext("/home/login", exchange -> {
+                System.out.println("1");
+                Headers h = exchange.getResponseHeaders();
+                if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    Server.sendFile("Login", h, exchange);
+                }
+                else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+                    autenticador.autenticar(exchange);
+                }
+            });
+
+            // Index requests
+            HttpContext indexContext = server.createContext("/", exchange -> {
+                System.out.println("index");
+                Headers h = exchange.getResponseHeaders();
+                if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    if(exchange.getRequestURI().toString().equals("/bingMaps.js")){
+                        Server.sendFileJS("bingMaps",h,exchange);
+                    }
+                    else{
+                        System.out.println(exchange.getRequestURI().toString());
+                        Server.sendFile("index", h, exchange);
+                    }
+                }
+            });
+
+            // Register requests
+            HttpContext registerContext = server.createContext("/home/registo", exchange -> {
+                System.out.println("3");
+                Headers h = exchange.getResponseHeaders();
+                if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    Server.sendFile("Registo", h, exchange);
+                } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
+                    BufferedReader bf = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+                    String[] info = divideMessage(bf);
+                    String nome = info[0], numero = info[1], data_nas = info[2], user = info[3], pass = info[5];
+                    String email = URLDecoder.decode(info[4], StandardCharsets.UTF_8);
+
+                    if (true /* || existsOnBD(email,numero,user) || */) {
+                        redirect("/../home/login","Login",0,h,exchange,200);
+                    }
+                    else redirect("/../index","Index",0,h,exchange,200);
+                }
+            });
+
+            //Home requests
+            HttpContext homeContext = server.createContext("/home", exchange -> {
+                System.out.println("4");
+                Headers h = exchange.getResponseHeaders();
+                if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    Server.sendFile("home", h, exchange);
+                }
+                else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+                    Server.sendFile("home", h, exchange);
+                }
+            });
+
+            HttpContext homeSettingsContext = server.createContext("/home/settings", exchange -> {
+                System.out.println("5");
+                Headers h = exchange.getResponseHeaders();
+                if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    Server.sendFile("settings", h, exchange);
+                }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+                    BufferedReader bf = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+                    String[] info = divideMessage(bf);
+                    if(info[0].equals("elimina")){
+                        // ELIMINAR CONTA
+                        redirect("/../index","Index",0,h,exchange,200);
+                    }else{
+                        System.out.println(Arrays.toString(info));
+                    }
+                }
+            });
+
+            HttpContext AvaliacaoContext = server.createContext("/home/avaliacao", exchange -> {
+                System.out.println("6");
+                Headers h = exchange.getResponseHeaders();
+                if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    Server.sendFile("avaliacao", h, exchange);
+                }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+                }
+            });
+
+            HttpContext InfoContext = server.createContext("/home/info", exchange -> {
+                System.out.println("7");
+                Headers h = exchange.getResponseHeaders();
+                if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    Server.sendFile("informacao", h, exchange);
+                }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+
+
+                }
+            });
+
+
+            CookieHandler.setDefault(new CookieManager());
+            server.start();
+        } catch (SQLException | SocketException e) {
+            e.printStackTrace();
         }
-
-        // ACEDER AO SERVIDOR COM O VALOR DO IP EM VEZ DE "localhost", e assim não funciona o login
-        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 8080), 5);
-
-        Autenticador autenticador=new Autenticador("/home");
-
-        // Login requests
-        HttpContext loginContext = server.createContext("/home/login", exchange -> {
-            System.out.println("1");
-            Headers h = exchange.getResponseHeaders();
-            if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                Server.sendFile("Login", h, exchange);
-            }
-            else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
-                autenticador.autenticar(exchange);
-            }
-        });
-
-        // Index requests
-        HttpContext indexContext = server.createContext("/", exchange -> {
-            System.out.println("index");
-            Headers h = exchange.getResponseHeaders();
-            if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                if(exchange.getRequestURI().toString().equals("/bingMaps.js")){
-                    Server.sendFileJS("bingMaps",h,exchange);
-                }
-                else
-                Server.sendFile("index", h, exchange);
-            }
-        });
-
-        // Register requests
-        HttpContext registerContext = server.createContext("/home/registo", exchange -> {
-            System.out.println("3");
-            Headers h = exchange.getResponseHeaders();
-            if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                Server.sendFile("Registo", h, exchange);
-            } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
-                BufferedReader bf = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-                String[] info = divideMessage(bf);
-                String nome = info[0], numero = info[1], data_nas = info[2], user = info[3], pass = info[5];
-                String email = URLDecoder.decode(info[4], StandardCharsets.UTF_8);
-
-                if (true /* || existsOnBD(email,numero,user) || */) {
-                    redirect("/../home/login","Login",0,h,exchange,200);
-                }
-                else redirect("/../index","Index",0,h,exchange,200);
-            }
-        });
-
-        //Home requests
-        HttpContext homeContext = server.createContext("/home", exchange -> {
-            System.out.println("4");
-            Headers h = exchange.getResponseHeaders();
-            if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                Server.sendFile("home", h, exchange);
-            }
-            else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
-                Server.sendFile("home", h, exchange);
-            }
-        });
-
-        HttpContext homeSettingsContext = server.createContext("/home/settings", exchange -> {
-            System.out.println("5");
-            Headers h = exchange.getResponseHeaders();
-            if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                Server.sendFile("settings", h, exchange);
-            }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
-                BufferedReader bf = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-                String[] info = divideMessage(bf);
-                if(info[0].equals("elimina")){
-                    // ELIMINAR CONTA
-                    redirect("/../index","Index",0,h,exchange,200);
-                }
-
-
-            }
-        });
-
-        HttpContext AvaliacaoContext = server.createContext("/home/avaliacao", exchange -> {
-            System.out.println("6");
-            Headers h = exchange.getResponseHeaders();
-            if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                Server.sendFile("avaliacao", h, exchange);
-            }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
-
-
-            }
-        });
-
-        HttpContext InfoContext = server.createContext("/home/info", exchange -> {
-            System.out.println("7");
-            Headers h = exchange.getResponseHeaders();
-            if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                Server.sendFile("informacao", h, exchange);
-            }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
-
-
-            }
-        });
-
-        CookieHandler.setDefault(new CookieManager());
-        server.start();
     }
 
     private static void sendFileJS(String bingMaps, Headers h, HttpExchange exchange) throws IOException {
@@ -218,4 +213,22 @@ public class Server {
         }
         return res;
     }
+
+    /*private static void imprimeIP() throws SocketException, UnknownHostException {
+        Enumeration en = NetworkInterface.getNetworkInterfaces();
+        String ip = "";
+        while(en.hasMoreElements())
+        {
+            NetworkInterface n = (NetworkInterface) en.nextElement();
+            Enumeration ee = n.getInetAddresses();
+            while (ee.hasMoreElements())
+            {
+                InetAddress i = (InetAddress) ee.nextElement();
+                if(i instanceof Inet4Address && !i.equals(Inet4Address.getByName("127.0.0.1"))){
+                    ip = i.getHostAddress();
+                    System.out.println("The Server's IP is:\n\t"+ip);
+                }
+            }
+        }
+    }*/
 }

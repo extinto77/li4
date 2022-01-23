@@ -35,8 +35,8 @@ public class Autenticador {
         Headers h=exchange.getResponseHeaders();
         h.add("WWW-Authenticate","Basic realm=\""+realm+"\", charset=\"UTF-8\"");
         try{
-            //if(clienteDAO.getByUsername(credentials[0]).getPassword().equals(credentials[1]))return 200;
-            if(credentials!=null&&credentials[0].equals("teste")&&credentials[1].equals("1234")) {
+            assert credentials != null;
+            if(clienteDAO.getByUsername(credentials[0]).getPassword().equals(credentials[1])){
                 exchange.sendResponseHeaders(200,0);
                 exchange.close();
             }
