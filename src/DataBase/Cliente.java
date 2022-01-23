@@ -3,6 +3,8 @@ package DataBase;
 import Exceptions.InvalidFormat;
 import Exceptions.MaxSizeOvertake;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Cliente {
@@ -17,13 +19,17 @@ public class Cliente {
 
     public Cliente(){}
 
-    public Cliente(String username, Date dataNascimento, String nome, String email, String telemovel, String password) throws MaxSizeOvertake, InvalidFormat {
+    public Cliente(String username, int ano, int mes, int dia, String nome, String email, String telemovel, String password) throws MaxSizeOvertake, InvalidFormat {
         setUsername(username);
         setNome(nome);
         setEmail(email);
         setTelemovel(telemovel);
         setPassword(password);
-        this.dataNascimento = dataNascimento;
+        setDataNascimento(ano, mes, dia);
+    }
+
+    public void setDataNascimento(int ano, int mes, int dia){
+        this.dataNascimento = JDBC.getDateSql(ano, mes, dia);
     }
 
     public String getUsername() {

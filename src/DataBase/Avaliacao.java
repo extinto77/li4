@@ -2,6 +2,8 @@ package DataBase;
 
 import Exceptions.MaxSizeOvertake;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Avaliacao {
@@ -12,16 +14,20 @@ public class Avaliacao {
     private String idRestaurante;
     private String usernameCliente;
 
-    public Avaliacao(String id, int classificacao, Date data, String texto, String idRestaurante, String usernameCliente) throws MaxSizeOvertake{
+    public Avaliacao(String id, int classificacao, int ano, int mes, int dia, String texto, String idRestaurante, String usernameCliente) throws MaxSizeOvertake{
         setId(id);
         setTexto(texto);
         setIdRestaurante(idRestaurante);
         setUsernameCliente(usernameCliente);
         this.classificacao = classificacao;
-        this.data = data;
+        setData(ano, mes, dia);
     }
 
     public Avaliacao() {
+    }
+
+    public void setData(int ano, int mes, int dia){
+        this.data = JDBC.getDateSql(ano, mes, dia);
     }
 
     public String getId() {
