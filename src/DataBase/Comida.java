@@ -12,7 +12,7 @@ public class Comida {
 
     }
 
-    public Comida(int id, short vegetariano, String nome) throws MaxSizeOvertake, InvalidFormat {
+    public Comida(int id, boolean vegetariano, String nome) throws MaxSizeOvertake, InvalidFormat {
         setNome(nome);
         setId(id);
         setVegetariano(vegetariano);
@@ -30,9 +30,13 @@ public class Comida {
         return vegetariano;
     }
 
-    public void setVegetariano(short vegetariano) throws InvalidFormat {
-        if (vegetariano == (short)0) this.vegetariano=false;
-        else if(vegetariano==(short)1) this.vegetariano = true;
+    public void setVegetariano(boolean vegetariano){
+        this.vegetariano=vegetariano;
+    }
+
+    public void setVegetariano(short vegetariano) throws InvalidFormat{
+        if (vegetariano == (short)0) this.vegetariano = false;
+        if (vegetariano == (short)1) this.vegetariano = true;
         else throw new InvalidFormat();
     }
 
