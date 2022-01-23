@@ -9,6 +9,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class Server {
         }
 
         // ACEDER AO SERVIDOR COM O VALOR DO IP EM VEZ DE "localhost", e assim não funciona o login
-        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName(ip), 8080), 5);
+        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 8080), 5);
 
         Autenticador autenticador=new Autenticador("/home");
 
@@ -53,6 +54,10 @@ public class Server {
             System.out.println("index");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                if(exchange.getRequestURI().toString().equals("/bingMaps.js")){
+                    Server.sendFileJS("bingMaps",h,exchange);
+                }
+                else
                 Server.sendFile("index", h, exchange);
             }
         });
@@ -104,6 +109,29 @@ public class Server {
 
             }
         });
+
+        HttpContext AvaliacaoContext = server.createContext("/home/avaliacao", exchange -> {
+            System.out.println("6");
+            Headers h = exchange.getResponseHeaders();
+            if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                Server.sendFile("avaliacao", h, exchange);
+            }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+
+
+            }
+        });
+
+        HttpContext InfoContext = server.createContext("/home/info", exchange -> {
+            System.out.println("7");
+            Headers h = exchange.getResponseHeaders();
+            if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                Server.sendFile("informacao", h, exchange);
+            }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+
+
+            }
+        });
+
         CookieHandler.setDefault(new CookieManager());
         server.start();
     }
