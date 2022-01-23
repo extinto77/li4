@@ -26,7 +26,7 @@ public class ComidaDAO {
         return c;
     }
 
-    private short short2boolean(boolean b){
+    private short boolean2short(boolean b){
         if (b) return (short) 1;
         else return (short) 0;
     }
@@ -36,8 +36,8 @@ public class ComidaDAO {
         if(ps != null){
             try {
                 // id autoincrements
-                ps.setShort(2,short2boolean(c.getVegetariano()));
-                ps.setString(3,c.getNome());
+                ps.setShort(1,boolean2short(c.getVegetariano()));
+                ps.setString(2, c.getNome());
                 ps.executeUpdate();
             } catch (SQLException e) {
                 throw new AddingError(); //Impossível adicionar à base de dados

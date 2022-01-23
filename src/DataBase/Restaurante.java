@@ -112,12 +112,7 @@ public class Restaurante {
         int MAX_SIZE = 9;
         if (telefone.length()> MAX_SIZE) throw new MaxSizeOvertake();
         int aux = Integer.parseInt(telefone);
-        if(aux<201000000|| aux>299999999 ||
-                (aux>=230000000 && aux<=230999999) || (aux>=237000000 && aux<=237999999) ||
-                (aux>=240000000 && aux<=240999999) || (aux>=246000000 && aux<=248999999) ||
-                (aux>=257000000 && aux<=257999999) || (aux>=287000000 && aux<=287999999) ||
-                (aux>=297000000 && aux<=297999999)
-        ) throw new InvalidFormat();
+        if(aux<201000000|| aux>999999999) throw new InvalidFormat();
         this.telefone = aux;
     }
 

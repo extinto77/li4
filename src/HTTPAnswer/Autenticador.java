@@ -41,7 +41,7 @@ public class Autenticador {
                 exchange.close();
             }
             else{
-                exchange.sendResponseHeaders(401,0);
+                exchange.sendResponseHeaders(400,0);
                 exchange.close();
             }
         } catch (Exception e) {
