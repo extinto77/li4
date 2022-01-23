@@ -39,7 +39,6 @@ public class Server {
 
         // Login requests
         HttpContext loginContext = server.createContext("/home/login", exchange -> {
-            System.out.println("1");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("Login", h, exchange);
@@ -51,7 +50,6 @@ public class Server {
 
         // Index requests
         HttpContext indexContext = server.createContext("/", exchange -> {
-            System.out.println("index");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 if(exchange.getRequestURI().toString().equals("/bingMaps.js")){
@@ -64,7 +62,6 @@ public class Server {
 
         // Register requests
         HttpContext registerContext = server.createContext("/home/registo", exchange -> {
-            System.out.println("3");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("Registo", h, exchange);
@@ -83,7 +80,6 @@ public class Server {
 
         //Home requests
         HttpContext homeContext = server.createContext("/home", exchange -> {
-            System.out.println("4");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("home", h, exchange);
@@ -94,7 +90,6 @@ public class Server {
         });
 
         HttpContext homeSettingsContext = server.createContext("/home/settings", exchange -> {
-            System.out.println("5");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("settings", h, exchange);
@@ -111,12 +106,15 @@ public class Server {
         });
 
         HttpContext AvaliacaoContext = server.createContext("/home/avaliacao", exchange -> {
-            System.out.println("6");
             Headers h = exchange.getResponseHeaders();
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("avaliacao", h, exchange);
             }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
-
+                StringBuilder builder=new StringBuilder();
+                BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+                while(bufferedReader.ready()){
+                    builder.append(bufferedReader.readLine());
+                }
 
             }
         });
