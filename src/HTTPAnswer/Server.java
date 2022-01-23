@@ -57,8 +57,10 @@ public class Server {
                 if(exchange.getRequestURI().toString().equals("/bingMaps.js")){
                     Server.sendFileJS("bingMaps",h,exchange);
                 }
-                else
-                Server.sendFile("index", h, exchange);
+                else{
+                    System.out.println(exchange.getRequestURI().toString());
+                    Server.sendFile("index", h, exchange);
+                }
             }
         });
 
@@ -104,9 +106,9 @@ public class Server {
                 if(info[0].equals("elimina")){
                     // ELIMINAR CONTA
                     redirect("/../index","Index",0,h,exchange,200);
+                }else{
+                    System.out.println(Arrays.toString(info));
                 }
-
-
             }
         });
 
@@ -116,8 +118,6 @@ public class Server {
             if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                 Server.sendFile("avaliacao", h, exchange);
             }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
-
-
             }
         });
 
@@ -131,6 +131,7 @@ public class Server {
 
             }
         });
+
 
         CookieHandler.setDefault(new CookieManager());
         server.start();
