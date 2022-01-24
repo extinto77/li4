@@ -12,7 +12,6 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
-
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -26,12 +25,12 @@ public class Server {
     public static void main(String[] args) throws IOException {
 
         try {
-            //imprimeIP();
+            // imprimeIP();
             Tables bd = JDBC.iniciaBD();
 
             HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 8080), 5);
 
-            Autenticador autenticador=new Autenticador(bd.getCli(),"/home");
+            Autenticador autenticador = new Autenticador(bd.getCli(), "/home");
 
             //Login requests
             HttpContext loginContext = server.createContext("/home/login", exchange -> {
@@ -39,8 +38,7 @@ public class Server {
                 Headers h = exchange.getResponseHeaders();
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                     Server.sendFile("Login", h, exchange);
-                }
-                else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+                } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
                     autenticador.autenticar(exchange);
                 }
             });
@@ -50,10 +48,9 @@ public class Server {
                 System.out.println("index");
                 Headers h = exchange.getResponseHeaders();
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                    if(exchange.getRequestURI().toString().equals("/bingMaps.js")){
-                        Server.sendFileJS("bingMaps",h,exchange);
-                    }
-                    else{
+                    if (exchange.getRequestURI().toString().equals("/bingMaps.js")) {
+                        Server.sendFileJS("bingMaps", h, exchange);
+                    } else {
                         System.out.println(exchange.getRequestURI().toString());
                         Server.sendFile("index", h, exchange);
                     }
@@ -84,7 +81,6 @@ public class Server {
                             int error = 200 + res;
                             exchange.sendResponseHeaders(error,0);
                             exchange.close();
-                            //redirect("/../index","Index",0,h,exchange,200);
                         }
                     } catch (BDFailedConnection | InvalidFormat | MaxSizeOvertake | AddingError e) {
                         e.printStackTrace();
@@ -92,7 +88,7 @@ public class Server {
                 }
             });
 
-            //Home requests
+            // Home requests
             HttpContext homeContext = server.createContext("/home", exchange -> {
                 System.out.println("4");
                 Headers h = exchange.getResponseHeaders();
@@ -105,8 +101,7 @@ public class Server {
                         e.printStackTrace();
                     }
                     Server.sendFile("home", h, exchange);
-                }
-                else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+                } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
                     Server.sendFile("home", h, exchange);
                 }
             });
@@ -116,13 +111,13 @@ public class Server {
                 Headers h = exchange.getResponseHeaders();
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                     Server.sendFile("settings", h, exchange);
-                }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+                } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
                     BufferedReader bf = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
                     String[] info = divideMessage(bf);
-                    if(info[0].equals("elimina")){
+                    if (info[0].equals("elimina")) {
                         // ELIMINAR CONTA
-                        redirect("/../index","Index",0,h,exchange,200);
-                    }else{
+                        redirect("/../index", "Index", 0, h, exchange, 200);
+                    } else {
                         System.out.println(Arrays.toString(info));
                     }
                 }
@@ -133,7 +128,7 @@ public class Server {
                 Headers h = exchange.getResponseHeaders();
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                     Server.sendFile("avaliacao", h, exchange);
-                }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
+                } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
                 }
             });
 
@@ -142,12 +137,10 @@ public class Server {
                 Headers h = exchange.getResponseHeaders();
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                     Server.sendFile("informacao", h, exchange);
-                }else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
-
+                } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
 
                 }
             });
-
 
             CookieHandler.setDefault(new CookieManager());
             server.start();
@@ -198,25 +191,28 @@ public class Server {
         os.close();
     }
 
-    public static void redirect(String path,String pagename,int delay,Headers h, HttpExchange exchange,int rCode) throws IOException {
-        StringBuilder builder=new StringBuilder();
+    public static void redirect(String path, String pagename, int delay, Headers h, HttpExchange exchange, int rCode)
+            throws IOException {
+        StringBuilder builder = new StringBuilder();
         builder.append("<!DOCTYPE HTML><html><head><title> Redirect to ").append(pagename).append(" </title>");
-        builder.append("<meta charset=\"UTF-8\"><meta http-equiv=\"refresh\" content=\"").append(delay).append(";url=").append(path).append("\">");
+        builder.append("<meta charset=\"UTF-8\"><meta http-equiv=\"refresh\" content=\"").append(delay).append(";url=")
+                .append(path).append("\">");
         builder.append("</head><body>Será redirecionado para ").append(pagename).append("num instante.<br>");
-        builder.append("Senão dor redirecionado, clique aqui:<a href=\"").append(path).append("\">click here</a>.</body></html>");
+        builder.append("Senão dor redirecionado, clique aqui:<a href=\"").append(path)
+                .append("\">click here</a>.</body></html>");
         h.add("Content-Type", "text/html; charset=utf-8");
-        List<String> cookies=exchange.getResponseHeaders().get("Set-Cookie");
-        if(cookies!=null){
-            StringBuilder cookieString= new StringBuilder();
-            boolean first=true;
-            for(String cookie:cookies){
-                if(!first){
+        List<String> cookies = exchange.getResponseHeaders().get("Set-Cookie");
+        if (cookies != null) {
+            StringBuilder cookieString = new StringBuilder();
+            boolean first = true;
+            for (String cookie : cookies) {
+                if (!first) {
                     cookieString.append("; ");
-                }
-                else first=false;
+                } else
+                    first = false;
                 cookieString.append(cookie);
             }
-            h.add("Set-Cookie",cookieString.toString());
+            h.add("Set-Cookie", cookieString.toString());
         }
         byte[] bytes = builder.toString().getBytes(StandardCharsets.UTF_8);
         exchange.sendResponseHeaders(rCode, bytes.length);
@@ -270,21 +266,25 @@ public class Server {
         return res;
     }
 
-    /*private static void imprimeIP() throws SocketException, UnknownHostException {
-        Enumeration en = NetworkInterface.getNetworkInterfaces();
-        String ip = "";
-        while(en.hasMoreElements())
-        {
-            NetworkInterface n = (NetworkInterface) en.nextElement();
-            Enumeration ee = n.getInetAddresses();
-            while (ee.hasMoreElements())
-            {
-                InetAddress i = (InetAddress) ee.nextElement();
-                if(i instanceof Inet4Address && !i.equals(Inet4Address.getByName("127.0.0.1"))){
-                    ip = i.getHostAddress();
-                    System.out.println("The Server's IP is:\n\t"+ip);
-                }
-            }
-        }
-    }*/
+    /*
+     * private static void imprimeIP() throws SocketException, UnknownHostException
+     * {
+     * Enumeration en = NetworkInterface.getNetworkInterfaces();
+     * String ip = "";
+     * while(en.hasMoreElements())
+     * {
+     * NetworkInterface n = (NetworkInterface) en.nextElement();
+     * Enumeration ee = n.getInetAddresses();
+     * while (ee.hasMoreElements())
+     * {
+     * InetAddress i = (InetAddress) ee.nextElement();
+     * if(i instanceof Inet4Address &&
+     * !i.equals(Inet4Address.getByName("127.0.0.1"))){
+     * ip = i.getHostAddress();
+     * System.out.println("The Server's IP is:\n\t"+ip);
+     * }
+     * }
+     * }
+     * }
+     */
 }
