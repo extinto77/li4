@@ -15,7 +15,6 @@
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
-            overflow:hidden;
             background-color: #cccccc;
             min-height: 100%;
         }
@@ -29,7 +28,6 @@
             border: 2px solid rgb(0, 0, 0);
             cursor: pointer;
         }
-
         input{
             width: 100%;
             margin: 8px 0;
@@ -40,34 +38,26 @@
             position:relative;
             height: 20%;
         }
-
         button:hover {
             opacity: 0.7;
         }
-
-        .cancelbtn {
-            width: auto;
-            padding: 10px 18px;
-            margin: 10px 5px;
-        }
-
         .container {
-            width: 30%;
+            width: 50%;
             padding: 5%;
             background-color: rgba(204, 204, 204, 0.7);
             margin:auto;
             vertical-align: auto;
             position: relative;
             height: auto;
-            overflow: hidden;
         }
 
         .flex-parent {
             display: flex;
+            width: fit-content;
         }
         .flex-child {
-            margin: 5px;
-            flex: 1;
+            width: border-box;
+            overflow: hidden;
         }
 
         .borderless{
@@ -96,12 +86,12 @@
                     <input type="text" placeholder="Nome Completo" name="nome" required 
                     oninvalid="this.setCustomValidity('Introduza o seu nome')"
                     oninput="this.setCustomValidity('')">
-                    
-                    <input type="number" placeholder="Número de telemóvel" name="numero" required 
-                    oninvalid="this.setCustomValidity('Introduza o seu número de telemóvel')"
-                    oninput="this.setCustomValidity('')"
-                    maxlength="9"
-                    minlength="9">
+
+                    <input id="num" type="number" onKeyPress="if(this.value.length==9) return false;" placeholder="Número de telemóvel" name="numero" required
+                           min="200000000" max="999999999"
+                           oninvalid="this.setCustomValidity('Introduza o seu número de telemóvel')"
+                           oninput="this.setCustomValidity('')" >
+                    <span class="validity"></span>
                     
                     <input type="date" placeholder="Data de Nascimento" name="nascimento" required 
                     oninvalid="this.setCustomValidity('Introduza a sua data de nascimento')"

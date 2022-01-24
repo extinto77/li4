@@ -19,7 +19,7 @@ public class ClienteDAO {
         try {
             c.setUsername(rs.getString("username"));
             c.setDataNascimento(rs.getDate("dataNascimento"));
-            c.setNome(rs.getString("data"));
+            c.setNome(rs.getString("nome"));
             c.setEmail(rs.getString("email"));
             c.setTelemovel(rs.getString("telemovel"));
             c.setPassword(rs.getString("password"));

@@ -213,19 +213,18 @@
             <h2>DEFINIÇÕES</h2>
         </div>
         </div>
-        <form class="borderless" method="post">
-        <button type="submit">Editar</button>
+        <form id="edit" class="borderless" method="post">
+        <button type="submit" form="edit">Editar</button>
         <div class="flex-parent">
             <div class="flex-child">
                 <input type="text" placeholder="Nome Completo" name="nome"
                        oninvalid="this.setCustomValidity('Introduza o seu nome')"
                        oninput="this.setCustomValidity('')">
 
-                <input type="number" placeholder="Número de telemóvel" name="numero"
+                <input id="num" type="number" onKeyPress="if(this.value.length==9) return false;" placeholder="Número de telemóvel" name="numero"
+                       min="200000000" max="999999999"
                        oninvalid="this.setCustomValidity('Introduza o seu número de telemóvel')"
-                       oninput="this.setCustomValidity('')"
-                       maxlength="9"
-                       minlength="9">
+                       oninput="this.setCustomValidity('')" >
 
                 <input type="date" placeholder="Data de Nascimento" name="nascimento"
                        oninvalid="this.setCustomValidity('Introduza a sua data de nascimento')"
@@ -249,7 +248,7 @@
         <div class="local">
         <bold class="local_txt">LOCALIZAÇÃO</bold>
             <label class="switch">
-                <input type="checkbox">
+                <input type="checkbox" onclick="turnOff()">
                 <span class="slider round"></span>
             </label>
         </div>
