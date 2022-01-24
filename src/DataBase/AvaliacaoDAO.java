@@ -101,7 +101,8 @@ public class AvaliacaoDAO {
             }catch (SQLException e) {
                 return 0;
             }
-            return total/num;
+            if(num!=0)return total/num;
+            else return 0;
         }
         else
             return 0;

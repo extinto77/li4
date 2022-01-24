@@ -108,7 +108,7 @@ public class Avaliacao {
     }
 
     private String htmlStars(){
-        return "&#9733".repeat(classificacao)+"&#9734".repeat(5-classificacao);
+        return "&#9733;".repeat(classificacao)+"&#9734;".repeat(5-classificacao);
     }
 
     public static String randomString() {

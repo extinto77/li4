@@ -119,19 +119,16 @@ public class RestauranteDAO {
     }
 
     public List<Restaurante> getAllRestaurantesNome(String nome) throws BDFailedConnection {
-        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante");
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE nome LIKE '%"+nome+"%'");
 
         List<Restaurante> list = new ArrayList<>();
         if (ps != null) {
             try {
                 ResultSet rs = ps.executeQuery();
-                String lower_nome = nome.toLowerCase();
                 while (rs.next()) {
                     Restaurante r = fromResultSet2Rest(rs);
                     if(r != null){
-                        String resNome = r.getNome().toLowerCase();
-                        if(lower_nome.matches("(.*)"+ resNome+"(.*)"))
-                            list.add(r);
+                        list.add(r);
                     }
                 }
             }catch (SQLException e) {

@@ -172,18 +172,19 @@ public class Restaurante {
     }
 
     private String htmlStars(int classificacao){
-        return "&#9733".repeat(classificacao)+"&#9734".repeat(5-classificacao);
+        return "&#9733;".repeat(classificacao)+"&#9734;".repeat(5-classificacao);
     }
 
     public String htmlSearch(int stars){
-        return  "<div class=\"option\" style=\"padding-left: 3%\">"+
-                "<a href=\"/home/info?id="+id+"\" class=\"fill-div\"></a>"+
+        return  "<div class=\"option\">"+
+                "<button onclick=\"window.location.href='/home/info?id="+id+"';\" style=\"display: block\">"+
                     "<p style=\"font-size:40px;\">"+
                         "<b>"+nome+"</b>&nbsp;"+
-                        "<img src=\""+flagURL()+"\" height=\"30\" width=\"auto\">"+
+                        "<img src=\""+flagURL()+"\" height=\"25\" width=\"auto\">"+
                     "</p>"+
-                    "<p>"+getNacionalidade()+"</p>"+
-                    "<p>"+htmlStars(stars)+"</p>"+
+                    "<p>Culinária "+getNacionalidade()+"</p>"+
+                    "<p style=\"font-size:25px\">" + htmlStars(stars) + "</p>"+
+                "</button>"+
                 "</div>";
     }
 }

@@ -196,8 +196,9 @@ public class Server {
                         Avaliacao avaliacao=new Avaliacao(Integer.parseInt(dados[1]),date.getYear(),date.getMonthValue(),date.getDayOfMonth(),URLDecoder.decode(dados[0],StandardCharsets.UTF_8),id,cli.getUsername());
                         bd.getAva().addAvaliacao(avaliacao);
                     } catch (Exception exception) {
-                        redirect("/home", "Home", 0, h, exchange, 200);
+                        exception.printStackTrace();
                     }
+                    redirect("/home", "Home", 0, h, exchange, 200);
                 }
             });
 
@@ -244,14 +245,14 @@ public class Server {
                 }
             });
 
-            HttpContext searchContext = server.createContext("/home/info", exchange ->{
+            HttpContext searchContext = server.createContext("/home/search", exchange ->{
                 Headers h = exchange.getResponseHeaders();
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                     String queryURL=exchange.getRequestURI().getQuery();
                     String keyword="";
                     if(queryURL!=null&&queryURL.length()>0){
                         String[]query=queryURL.split("=");
-                        if(query[0].equals("id")&&query.length>1){
+                        if(query[0].equals("search")&&query.length>1){
                             keyword=query[1];
                         }
                     }
