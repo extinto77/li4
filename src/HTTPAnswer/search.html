@@ -3,26 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Informações</title>
+    <title>Search</title>
     <link rel="icon" href="https://i.imgur.com/teflePh.png"
           type="image/x-icon">
     <style>
         Body {
             font-family: Calibri, Helvetica, sans-serif;
-            overflow: scroll;
-            overflow-x: hidden;
+            overflow: hidden;
             background-color: white;
             min-height: 100%;
         }
         .container {
             width: 89%;
             padding: 0 5%;
+            background-color: white;
             margin:auto;
             vertical-align: center;
             horiz-align: center;
             position: relative;
             align-content: center;
             height: auto;
+        }
+        .option{
+            background-color: white;
+            width: 96%;
+            margin-top: 4%;
+            float: none;
+            border: 3px solid black;
         }
         button {
             background-color: #cccccc;
@@ -66,6 +73,42 @@
             border: 2px solid black;
             margin: auto auto 20px;
         }
+        .secondTop{
+            width: 80%;
+            vertical-align: auto;
+            position: relative;
+            height: 50px;
+            padding: 20px 5%;
+            margin: auto auto 20px;
+        }
+        .menu{
+            width: 40px;
+            height: 40px;
+            padding: 3px 5px;
+            margin-left: 0;
+            margin-right: 10px;
+            float: left;
+            background: none;
+            border: none;
+        }
+        .search{
+            border: none;
+            background: none;
+            float: left;
+            padding-left: 4px;
+            padding-top: 3px;
+            height: 40px;
+            width: 40px;
+            opacity: 1;
+        }
+        .searchBar{
+            width: 125%;
+            padding-left: 4px;
+            padding-top: 10px;
+            position: center;
+            background: gray;
+            float: inside;
+        }
         .user{
             float: right;
             display: inline-block;
@@ -82,6 +125,29 @@
             opacity: 1;
             float: right;
         }
+        .random{
+            border: none;
+            background: none;
+            padding-right: 0px;
+            padding-top: 3px;
+            margin-top: 10px;
+            height: 30px;
+            width: 30px;
+            opacity: 1;
+            float: right;
+        }
+        .searchWrap{
+            height: 20px;
+            width: 70%;
+
+            padding-top: 13px;
+            padding-left: 10px;
+            float: left;
+        }
+        #myMap{
+            alignment: right;
+            position: relative;
+        }
         .def{
             width: 5%;
             height: 3%;
@@ -94,104 +160,62 @@
         .logout_form{
             float: right;
         }
+        .dropdown-content{
+            width: 100%;
+            height: 270px;
+            padding: 5%;
+            float: left;
+            horiz-align: center;
+            margin-top: 2.5%;
+            margin-left: -5%;
+            background-color: whitesmoke;
+            opacity: 0;
+        }
         .bottom{
             position: fixed;
             bottom: 0;
         }
-        #midSection{
-            padding-top: 10px ;
-            padding-bottom: 10px;
-            background-color: lightgray;
-            height: auto;
-            width: 80%;
-            position: relative;
+        #nacionalidade{
+            padding: 2%;
         }
-        .user_image{
-            height: 100px;
-            width: auto;
-            border: 2px solid black;
-            margin-right: 20px;
-            float: left;
-        }
-        .flex-child {
-            margin: 5px;
-            flex: 1;
-            border: 2px solid black;
-            height: auto;
-            display: flex;
-            padding: 10px;
-            margin-bottom: 3%;
-        }
-        .def_text {
-            margin-top: 4%;
-            background-color: whitesmoke;
-            margin-left: -0.7%;
-            padding: 4%;
-            width: 93%;
-        }
-        .round {
-            border-radius: 25px;
-            border: none;
-            background: #9aa499;
-            padding: 15px;
-            width: 100px;
-            height: 20px;
+        .check{
+            margin-top: 1%;
             margin-left: 10%;
-            margin-bottom: 1%;
-            margin-top: -5.5%;
-            float: right;
         }
-        #round_2{
-            border: none;
-            background: none;
-            text-align: center;
-            image-orientation: from-image;
-            font-size: 16px;
-            width: 6%;
-            float: right;
-            border-radius: 50%;
-            padding: 0;
-            margin-top: -8%;
+        #topCheck{
+            margin-top: 2%;
+            margin-bottom: 2%;
         }
+        #botCheck{
+
+        }
+        .chk_b{
+            height: 15px;
+            width: 15px;
+        }
+
     </style>
 </head>
 <body>
 <div class="firstTop">
-    <bold>INFORMAÇÕES</bold>
+    <bold>SEARCH</bold>
     <bold class="user">
         <form action="../../" class="logout_form">
             <button type="submit" class="logout" >
                 <img src="https://i.imgur.com/MKVEzDH.jpg" height=30px width=30px>
             </button>
         </form>
-
     </bold>
 </div>
-
-<div id="midSection" class="container">
-<div style="text-align: center;">
-    <h1>TITULO</h1>
-    <h3  class="round">€ - €€</h3>
-</div>
-    Lorem ipsum dolor sit amet
-</div>
 <div class="container">
-        <div class="def_text">
-            <h2 style="margin-bottom: 4%">AVALIAÇÕES</h2>
-            <script >
-                function avaliar() {
-                    window.location="/home/avaliacao/"+document.location.search;
-                }
-            </script>
-            <button id="round_2" onclick="avaliar()"><img src="https://i.imgur.com/lNoKGgE.png" style="width: 100%"></button>
-            <div id="avaliacoes">
-                Aenean commodo ligula eget dolor
-            </div>
-        </div>
-</div>
-<div style="margin: 120px">
-</div>
-<div class="container">
+    <div class="option" style="padding-left: 3%">
+        <p style="font-size:40px;">
+            <b>RESTAURANTE</b>&nbsp;
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Flag_of_Mexico.svg/125px-Flag_of_Mexico.svg.png" height="30" width="auto">
+        </p>
+        <p>CULINARIA</p>
+        <p>ESTRELAS</p>
+    </div>
     <div class="bottom">
         <form action="/home/settings">
             <button class="def">
@@ -201,15 +225,5 @@
         <img class="logo" src="https://i.imgur.com/teflePh.png">
     </div>
 </div>
-<script type="text/javascript">
-    function RandomColor() {
-        var element = document.getElementsByClassName("user_image");
-
-        for(var i = 0; i < element.length; i++){
-            element.item(i).style.backgroundColor="#"+Math.floor(Math.random()*16777215).toString(16);
-        }
-    }
-    RandomColor();
-</script>
 </body>
 </html>

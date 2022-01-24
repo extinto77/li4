@@ -152,4 +152,22 @@ public class Restaurante {
                 return "";
         }
     }
+    public String flagURL(){
+        switch(paisOrigem.toLowerCase()){
+            case "china":
+                return "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Flag_of_the_People%27s_Republic_of_China.svg/125px-Flag_of_the_People%27s_Republic_of_China.svg.png";
+            case "italia":
+                return "https://upload.wikimedia.org/wikipedia/en/thumb/0/03/Flag_of_Italy.svg/125px-Flag_of_Italy.svg.png";
+            case "turquia":
+                return "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Flag_of_Turkey.svg/125px-Flag_of_Turkey.svg.png";
+            case "japao":
+                return "https://upload.wikimedia.org/wikipedia/en/thumb/9/9e/Flag_of_Japan.svg/125px-Flag_of_Japan.svg.png";
+            case "espanha":
+                return "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Bandera_de_España.svg/125px-Bandera_de_España.svg.png";
+            case "mexico":
+                return "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Flag_of_Mexico.svg/125px-Flag_of_Mexico.svg.png";
+            default:
+                return "";
+        }
+    }
 }

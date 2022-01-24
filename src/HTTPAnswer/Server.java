@@ -5,10 +5,7 @@ import DataBase.JDBC;
 import DataBase.Tables;
 import Exceptions.*;
 import DataBase.*;
-import Exceptions.AddingError;
-import Exceptions.BDFailedConnection;
-import Exceptions.InvalidFormat;
-import Exceptions.MaxSizeOvertake;
+import Exceptions.*;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
@@ -18,9 +15,10 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Server {
 
@@ -34,6 +32,7 @@ public class Server {
 
             Autenticador autenticador = new Autenticador(bd.getCli(), "/home");
 
+            AtomicReference<String> loggedUser=new AtomicReference<>();
             //Login requests
             HttpContext loginContext = server.createContext("/home/login", exchange -> {
                 System.out.println("1");
@@ -41,7 +40,7 @@ public class Server {
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
                     Server.sendFile("Login", h, exchange);
                 } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
-                    autenticador.autenticar(exchange);
+                    loggedUser.set(autenticador.autenticar(exchange));
                 }
             });
 
@@ -171,8 +170,42 @@ public class Server {
                 System.out.println("6");
                 Headers h = exchange.getResponseHeaders();
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                    Server.sendFile("avaliacao", h, exchange);
+                    String body=Server.HtmlText("avaliacao");
+                    String username;
+                    try{
+                        username=bd.getCli().getByField(loggedUser.get(),"email").getUsername();
+                        body=body.replace("USERNAME",username);
+                        h.add("Content-Type", "text/html; charset=utf-8");
+                        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+                        exchange.sendResponseHeaders(200, bytes.length);
+                        OutputStream os = exchange.getResponseBody();
+                        os.write(bytes);
+                        os.flush();
+                        os.close();
+                    } catch (BDFailedConnection | NoMatch bdFailedConnection) {
+                        bdFailedConnection.printStackTrace();
+                    }
+
                 } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
+                    String user=loggedUser.get();
+                    BufferedReader buffer=new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+                    String[] dados=divideMessage(buffer);
+                    String path=exchange.getRequestURI().getQuery();
+                    String id="";
+                    if(path!=null&&path.length()>0){
+                        String[]query=path.split("=");
+                        if(query[0].equals("id")&&query.length>1){
+                            id=query[1];
+                        }
+                    }
+                    try{
+                        Cliente cli=bd.getCli().getByField(user,"email");
+                        LocalDate date=LocalDate.now();
+                        Avaliacao avaliacao=new Avaliacao(Integer.parseInt(dados[1]),date.getYear(),date.getMonthValue(),date.getDayOfMonth(),URLDecoder.decode(dados[0],StandardCharsets.UTF_8),id,cli.getUsername());
+                        bd.getAva().addAvaliacao(avaliacao);
+                    } catch (Exception exception) {
+                        redirect("/home", "Home", 0, h, exchange, 200);
+                    }
                 }
             });
 
@@ -190,7 +223,6 @@ public class Server {
                             id=query[1];
                         }
                     }
-
                     try {
                         Restaurante res;
                         if(id.length()>0){
@@ -217,13 +249,6 @@ public class Server {
                     } catch (BDFailedConnection | InvalidFormat bdFailedConnection) {
                         bdFailedConnection.printStackTrace();
                     }
-
-
-
-
-                    Server.sendFile("informacao", h, exchange);
-                } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
-
                 }
             });
 
