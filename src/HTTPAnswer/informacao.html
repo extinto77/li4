@@ -178,9 +178,12 @@
 <div class="container">
         <div class="def_text">
             <h2 style="margin-bottom: 4%">AVALIAÇÕES</h2>
-            <form action="/home/avaliacao">
-            <button id="round_2" type="submit"><img src="https://i.imgur.com/lNoKGgE.png" style="width: 100%"></button>
-            </form>
+            <script >
+                function avaliar() {
+                    window.location="/home/avaliacao/"+document.location.search;
+                }
+            </script>
+            <button id="round_2" onclick="avaliar()"><img src="https://i.imgur.com/lNoKGgE.png" style="width: 100%"></button>
             <div id="avaliacoes">
                 Aenean commodo ligula eget dolor
             </div>

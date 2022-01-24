@@ -191,6 +191,47 @@
         .logout_form{
             float: right;
         }
+        .popup {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .popup .popuptext {
+            opacity: 0;
+            width: 160px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -80px;
+        }
+
+        .popup .popuptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .popup .show {
+            visibility: visible;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s;
+        }
     </style>
 </head>
 
@@ -214,9 +255,15 @@
         </div>
         </div>
         <form id="edit" class="borderless" method="post">
-        <button type="submit" form="edit">Editar</button>
+            <center>
+                <div class="popup" onclick="hide()">
+                    <span class="popuptext" id="popup"></span>
+                </div>
+            </center>
+        <button type="submit" form="edit" onclick="change(1)">Editar</button>
         <div class="flex-parent">
             <div class="flex-child">
+                <input type="hidden" id="tipo" name="tipo" value="">
                 <input type="text" placeholder="Nome Completo" name="nome"
                        oninvalid="this.setCustomValidity('Introduza o seu nome')"
                        oninput="this.setCustomValidity('')">
@@ -248,25 +295,31 @@
         <div class="local">
         <bold class="local_txt">LOCALIZAÇÃO</bold>
             <label class="switch">
-                <input type="checkbox" onclick="turnOff()">
+                <input type="checkbox">
                 <span class="slider round"></span>
             </label>
         </div>
         <div>
 
 
-        <form id="elimina" method="post">
-            <input type="hidden" name="eliminaConta" value="elimina">
             <bold>ELIMINAR CONTA</bold>
-            <button type = "submit" class="elimina" form="elimina">
+            <button type = "submit" onclick="change(2)" class="elimina" form="edit">
                 <img class="lixo" src="https://i.imgur.com/YpcUx5n.png" height=25px width=auto/>
             </button>
-        </form>
 
         </div>
     </div>
 
 
 <img class="logo" src="https://i.imgur.com/teflePh.png">
+<script>
+    function change(num){
+        if(num === 1){
+            document.getElementById("tipo").value ="edit";
+        }else{
+            document.getElementById("tipo").value ="elimina";
+        }
+    }
+</script>
 </body>
 </html>

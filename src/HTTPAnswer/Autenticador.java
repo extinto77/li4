@@ -29,29 +29,31 @@ public class Autenticador {
         this.realm=realm;
     }
 
-    public void autenticar(HttpExchange exchange){
+    public String autenticar(HttpExchange exchange){
         lock.lock();
         String[] credentials=extractCredentials(exchange);
         Headers h=exchange.getResponseHeaders();
         h.add("WWW-Authenticate","Basic realm=\""+realm+"\", charset=\"UTF-8\"");
         try{
-            assert credentials != null;
-            if(clienteDAO.getByField(credentials[0],"email").getPassword().equals(credentials[1])){
+            if(credentials != null&&clienteDAO.getByField(credentials[0],"email").getPassword().equals(credentials[1])){
                 exchange.sendResponseHeaders(200,0);
                 exchange.close();
+                return credentials[0];
             }
             else{
                 exchange.sendResponseHeaders(400,0);
                 exchange.close();
+                return null;
             }
         } catch (Exception e) {
             exchange.close();
+            return null;
         } finally {
             lock.unlock();
         }
     }
 
-    private static String[] extractCredentials(HttpExchange exchange){
+    public static String[] extractCredentials(HttpExchange exchange){
         BufferedReader reader=new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
         try{
             StringBuilder msg = new StringBuilder();

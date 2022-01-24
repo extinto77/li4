@@ -15,7 +15,7 @@
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
-            background-color: #cccccc;
+            background-color: #9b9b9b;
             min-height: 100%;
         }
 
@@ -164,8 +164,10 @@
             var f = document.querySelector("#register");
             f.addEventListener("submit", (e) => {
                 e.preventDefault();
+                debugger;
+                const form = e.target;
 
-                fetch("/home/registo", {
+                fetch(form.action, {
                     method: "POST",
                     body: new FormData(document.getElementById("register")),
                 }).then(res => {
@@ -181,8 +183,6 @@
                     }else {
                         throw new Error("Register error");
                     }
-                }).then(() => {
-                    window.location.href=window.location.origin;
                 },(err)=>{
                     window.location=window.location.host;
                 }).catch((error) => {

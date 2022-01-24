@@ -268,7 +268,6 @@
         function createCustomPushpins(maionese_balofa) {
 
             const pin = [];
-            etsrtystrstr
 
             return pin;
         }
@@ -339,7 +338,6 @@
 <div class="firstTop">
     <bold>HOME</bold>
     <bold class="user">
-    <bold class="user">
         <form action="../../" class="logout_form">
             <button type="submit" class="logout" >
                 <img src="https://i.imgur.com/MKVEzDH.jpg" height=30px width=30px>
@@ -352,17 +350,20 @@
     <button onclick="filterFunc()" class="menu" >
         <img src="https://i.imgur.com/WBLcq9x.png" height=30px width=30px>
     </button>
-    <button type="submit" class="search" form="form1">
-        <img src="https://i.imgur.com/ezpOrMU.png" height=30px width=30px>
-    </button>
-    <form id="form1">
+
+    <form id="form1" method="post">
+
+        <button type="submit" class="search" form="form1" onclick="change(2)">
+            <img src="https://i.imgur.com/ezpOrMU.png" height=30px width=30px>
+        </button>
+        <input type="hidden" id="tipo" name="tipo" value="">
     <div class="searchWrap">
 
-            <input type="text" name="restaurante" class="searchBar" width=100px height=25px required
+            <input id="searchBar" type="text" name="restaurante" class="searchBar" width=100px height=25px
                    oninvalid="this.setCustomValidity('Introduza um nome de Restaurante')"
                    oninput="this.setCustomValidity('')">
     </div>
-    <button type="submit" class="random">
+    <button type="submit" id="random" class="random" form="form1" onclick="change(1)">
         <img src="https://i.imgur.com/pyz8tob.png" height=30px width=30px>
     </button>
     <div id="dropdown" class="dropdown-content">
@@ -420,5 +421,22 @@
     <img class="logo" src="https://i.imgur.com/teflePh.png">
     </div>
 </div>
+<script>
+    function change(num){
+        if(num === 1){
+            document.getElementById("tipo").value ="random";
+        }else{
+            debugger;
+            if(document.getElementById("searchBar").value === ""){
+
+            }else{
+                document.getElementById("tipo").value ="exato";
+            }
+    }
+    }
+    window.addEventListener("load",function (){navigator.geolocation.getCurrentPosition(function (position){
+        document.getElementById("tipo").value = position.coords.latitude + "|" + position.coords.longitude;}
+        )});
+</script>
 </body>
 </html>

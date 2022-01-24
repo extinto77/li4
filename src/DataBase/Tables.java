@@ -1,5 +1,7 @@
 package DataBase;
 
+import Exceptions.BDFailedConnection;
+
 public class Tables {
     private final AvaliacaoDAO ava;
     private final ClienteDAO cli;

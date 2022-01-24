@@ -81,7 +81,7 @@ public class RestauranteDAO {
     }
 
     public Restaurante getByNomeRestaurante(String nome) throws BDFailedConnection {
-        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE nome='"+nome+"'"); // ver se é "... 'id'=" e na de baixo também
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE nome like'"+nome+"%'"); // ver se é "... 'id'=" e na de baixo também
         if(ps != null){
             try {
                 ResultSet rs = ps.executeQuery();
@@ -119,19 +119,16 @@ public class RestauranteDAO {
     }
 
     public List<Restaurante> getAllRestaurantesNome(String nome) throws BDFailedConnection {
-        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante");
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE nome LIKE '%"+nome+"%'");
 
         List<Restaurante> list = new ArrayList<>();
         if (ps != null) {
             try {
                 ResultSet rs = ps.executeQuery();
-                String lower_nome = nome.toLowerCase();
                 while (rs.next()) {
                     Restaurante r = fromResultSet2Rest(rs);
                     if(r != null){
-                        String resNome = r.getNome().toLowerCase();
-                        if(lower_nome.matches("(.*)"+ resNome+"(.*)"))
-                            list.add(r);
+                        list.add(r);
                     }
                 }
             }catch (SQLException e) {
@@ -207,6 +204,14 @@ public class RestauranteDAO {
     }
 
     public Restaurante getMaisProximo(String gpsAtual) throws BDFailedConnection{
+      /*  String[] aux = new String[4];
+        aux[0] = coords[0].split("\\.")[0];
+        aux[1] = coords[0].split("\\.")[1];
+        aux[2] = coords[1].split("\\.")[0];
+        aux[3] = coords[1].split("\\.")[1];
+        StringBuilder gpsAtual = new StringBuilder();
+        gpsAtual.append(aux[0]).append(",").append(aux[1]).append(" ").append(aux[2]).append(",").append(aux[3]);*/
+
         PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante");
         Restaurante resFinal = null;
         double disMin = 999999999.0;
@@ -243,14 +248,17 @@ public class RestauranteDAO {
     }
 
     private static double calculaDistancia(String inicio, String fim){
-        // "41,529383, -8,446513";
+        // 41.2352432|-67.1244124
+        // "41,529383, -8,446513"
         double EARTH_RADIUS_KM = 6371.0;
 
-        String[] ins = inicio.split(",");
+        String[] ins = inicio.split("\\|");
+        String[] aux = ins[0].split("\\.");
         String[] fns = fim.split(",");
 
-        double latI = getCoor(ins[0], ins[1]);
-        double longI = getCoor(ins[2].trim(), ins[3]);
+        double latI = getCoor(aux[0], aux[1]);
+        aux = ins[1].split("\\.");
+        double longI = getCoor(aux[0], aux[1]);
         double latF = getCoor(fns[0], fns[1]);
         double longF = getCoor(fns[2].trim(), fns[3]);
 
