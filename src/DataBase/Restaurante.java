@@ -152,7 +152,7 @@ public class Restaurante {
                 return "";
         }
     }
-    public String flagURL(){
+    private String flagURL(){
         switch(paisOrigem.toLowerCase()){
             case "china":
                 return "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Flag_of_the_People%27s_Republic_of_China.svg/125px-Flag_of_the_People%27s_Republic_of_China.svg.png";
@@ -169,5 +169,16 @@ public class Restaurante {
             default:
                 return "";
         }
+    }
+
+    public String htmlSearch(){
+        return  "<div class=\"option\" style=\"padding-left: 3%\">"+
+                    "<p style=\"font-size:40px;\">"+
+                        "<b>"+nome+"</b>&nbsp;"+
+                        "<img src=\""+flagURL()+"\" height=\"30\" width=\"auto\">"+
+                    "</p>"+
+                    "<p>"+getNacionalidade()+"</p>"+
+                    "<p>ESTRELAS</p>"+
+                "</div>";
     }
 }
