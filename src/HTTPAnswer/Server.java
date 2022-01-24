@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -260,6 +261,7 @@ public class Server {
                         try{
                             String body=Server.HtmlText("search");
                             List<Restaurante> restaurantes=bd.getRes().getAllRestaurantesNome(keyword);
+                            restaurantes.sort(Comparator.comparingInt(a -> bd.getAva().avaliacaoRestaurante(a.getId())));
                             if(restaurantes.size()>0){
                                 StringBuilder builder=new StringBuilder();
                                 for(Restaurante res:restaurantes){
