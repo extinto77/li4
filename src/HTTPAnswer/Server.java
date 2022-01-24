@@ -1,10 +1,7 @@
 package HTTPAnswer;
 
 import DataBase.*;
-import Exceptions.AddingError;
-import Exceptions.BDFailedConnection;
-import Exceptions.InvalidFormat;
-import Exceptions.MaxSizeOvertake;
+import Exceptions.*;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
@@ -127,7 +124,22 @@ public class Server {
                 System.out.println("6");
                 Headers h = exchange.getResponseHeaders();
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                    Server.sendFile("avaliacao", h, exchange);
+                    String body=Server.HtmlText("avaliacao");
+                    String username;
+                    try{
+                        username=bd.getCli().getByField(loggedUser.get(),"email").getUsername();
+                        body=body.replace("USERNAME",username);
+                        h.add("Content-Type", "text/html; charset=utf-8");
+                        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+                        exchange.sendResponseHeaders(200, bytes.length);
+                        OutputStream os = exchange.getResponseBody();
+                        os.write(bytes);
+                        os.flush();
+                        os.close();
+                    } catch (BDFailedConnection | NoMatch bdFailedConnection) {
+                        bdFailedConnection.printStackTrace();
+                    }
+
                 } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
                     String user=loggedUser.get();
                     BufferedReader buffer=new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
