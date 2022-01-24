@@ -6,6 +6,7 @@ import HTTPAnswer.Server;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Random;
 
 public class Avaliacao {
     private String id; //key
@@ -17,6 +18,15 @@ public class Avaliacao {
 
     public Avaliacao(String id, int classificacao, int ano, int mes, int dia, String texto, String idRestaurante, String usernameCliente) throws MaxSizeOvertake{
         setId(id);
+        setTexto(texto);
+        setIdRestaurante(idRestaurante);
+        setUsernameCliente(usernameCliente);
+        this.classificacao = classificacao;
+        setData(ano, mes, dia);
+    }
+
+    public Avaliacao(int classificacao, int ano, int mes, int dia, String texto, String idRestaurante, String usernameCliente) throws MaxSizeOvertake{
+        setId(randomString());
         setTexto(texto);
         setIdRestaurante(idRestaurante);
         setUsernameCliente(usernameCliente);
@@ -88,8 +98,29 @@ public class Avaliacao {
     }
 
     public String getHTML(){
-        return "<img src=\"https://i.imgur.com/710mXhY.png\" class=\"user_image\"> <div class=\"flex-child\"> "+
-                "<label> <b>"+usernameCliente+"</b> <p>" + Server.toHTML(texto) + "</p> </label> </div>";
+        return  "<img src=\"https://i.imgur.com/710mXhY.png\" class=\"user_image\">" +
+                "<div class=\"flex-child\"> " +
+                    "<label> <b>"+usernameCliente+"</b>" +
+                        "<p>" + Server.toHTML(texto) + "</p>" +
+                        "<p style=\"font-size:25px\">" + htmlStars() + "</p>"+
+                    "</label>" +
+                "</div>";
+    }
+
+    private String htmlStars(){
+        return "&#9733".repeat(classificacao)+"&#9734".repeat(5-classificacao);
+    }
+
+    public static String randomString() {
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 19;
+        Random random = new Random();
+
+        return random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
     }
 
 }
