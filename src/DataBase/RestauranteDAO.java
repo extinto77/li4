@@ -2,6 +2,7 @@ package DataBase;
 
 import Exceptions.*;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.*;
 
@@ -176,6 +177,17 @@ public class RestauranteDAO {
         return list.get(index);
     }
 
+    public String getAllCoordenates() throws BDFailedConnection{
+        List<Restaurante> list = getAllRestaurantes();
+        String ret ="";
+        int i = 0;
+        for(Restaurante r : list){
+            ret += "pin[" + i +"] = new Microsoft.Maps.Pushpin(location("+ r.getGps()+"), {\n" +
+                    "                    title:" + r.getNome() + ";\n" ;
+            i++;
+        }
+        return ret;
+    }
 
     public static void main(String[] args) throws InvalidFormat {
         /*String url = "jdbc:mysql://localhost:3306/li4";

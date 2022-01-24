@@ -123,7 +123,10 @@ public class ClienteDAO {
         throw new BDFailedConnection(); // Impossível fazer ligação com a base de dados
     }
 
-    public boolean existsOnBD(String email, String numero, String user) {
-       
+    public int existsOnBD(String email, String numero, String user) throws BDFailedConnection{
+        if (JDBC.existsKey(this.con, "cliente", "username", user)) return 1;
+        if (JDBC.existsKey(this.con, "cliente", "email", email)) return 2;
+        if (JDBC.existsKey(this.con, "cliente", "telemovel", numero)) return 3;
+        else return 0;
     }
 }

@@ -26,7 +26,7 @@ public class ComidaDAO {
         return c;
     }
 
-    private short boolean2short(boolean b){
+        private short boolean2short(boolean b){
         if (b) return (short) 1;
         else return (short) 0;
     }

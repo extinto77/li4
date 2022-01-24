@@ -1,7 +1,12 @@
 package HTTPAnswer;
 
+import DataBase.Cliente;
 import DataBase.JDBC;
 import DataBase.Tables;
+import Exceptions.AddingError;
+import Exceptions.BDFailedConnection;
+import Exceptions.InvalidFormat;
+import Exceptions.MaxSizeOvertake;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
@@ -67,10 +72,23 @@ public class Server {
                     String nome = info[0], numero = info[1], data_nas = info[2], user = info[3], pass = info[5];
                     String email = URLDecoder.decode(info[4], StandardCharsets.UTF_8);
 
-                    if (bd.getCli().existsOnBD(email,numero,user)) {
-                        redirect("/../home/login","Login",0,h,exchange,200);
+                    try {
+                        int res = bd.getCli().existsOnBD(email,numero,user);
+                        if (res == 0) {
+                            String[] data = data_nas.split("-");
+                            bd.getCli().addCliente(new Cliente(user,Integer.parseInt(data[0]),Integer.parseInt(data[1]),Integer.parseInt(data[2]),nome,email,numero,pass));
+                            exchange.sendResponseHeaders(200,0);
+                            exchange.close();
+                        }
+                        else{
+                            int error = 200 + res;
+                            exchange.sendResponseHeaders(error,0);
+                            exchange.close();
+                            //redirect("/../index","Index",0,h,exchange,200);
+                        }
+                    } catch (BDFailedConnection | InvalidFormat | MaxSizeOvertake | AddingError e) {
+                        e.printStackTrace();
                     }
-                    else redirect("/../index","Index",0,h,exchange,200);
                 }
             });
 
@@ -79,6 +97,13 @@ public class Server {
                 System.out.println("4");
                 Headers h = exchange.getResponseHeaders();
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    try {
+                        String aux = bd.getRes().getAllCoordenates();
+                        //StringBuilder file =
+                       // home.
+                    } catch (BDFailedConnection e) {
+                        e.printStackTrace();
+                    }
                     Server.sendFile("home", h, exchange);
                 }
                 else if(exchange.getRequestMethod().equalsIgnoreCase("post")){
@@ -206,11 +231,42 @@ public class Server {
         while (bf.ready()) {
             msg.append(bf.readLine());
         }
-        String[] items = msg.toString().split("&");
-        String[] res = new String[items.length];
-        for (int i = 0; i < items.length; i++) {
-            res[i] = items[i].split("=")[1];
+        String[] items;
+        String[] res;
+        if(msg.toString().startsWith("------WebKitForm")){
+            res = parseForm(msg.toString());
+        }else{
+            items = msg.toString().split("&");
+            res = new String[items.length];
+            for (int i = 0; i < items.length; i++) {
+                res[i] = items[i].split("=")[1];
+            }
         }
+
+
+        return res;
+    }
+
+    private static String[] parseForm(String msg){
+        String[]aux1=msg.split("name=\"nome\"");
+        String[]aux2=aux1[1].split("-");
+        String[]aux3=aux1[1].split("name=\"numero\"");
+        String[]aux4=aux3[1].split("-");
+        String[]aux5=aux3[1].split("name=\"nascimento\"");
+        String[]aux6=aux5[1].split("-----");
+        String[]aux7=aux5[1].split("name=\"username\"");
+        String[]aux8=aux7[1].split("-");
+        String[]aux9=aux7[1].split("name=\"email\"");
+        String[]aux10=aux9[1].split("-");
+        String[]aux11=aux9[1].split("name=\"password\"");
+        String[]aux12=aux11[1].split("-");
+        String[]res=new String[6];
+        res[0]=aux2[0];
+        res[1]=aux4[0];
+        res[2]=aux6[0];
+        res[3]=aux8[0];
+        res[4]=aux10[0];
+        res[5]=aux12[0];
         return res;
     }
 

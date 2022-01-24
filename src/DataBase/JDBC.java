@@ -4,10 +4,13 @@ import Exceptions.AddingError;
 import Exceptions.BDFailedConnection;
 import Exceptions.InvalidFormat;
 import Exceptions.MaxSizeOvertake;
+import com.mysql.cj.conf.ConnectionUrlParser;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 
 public class JDBC {
     public static PreparedStatement codLine(Connection con, String str){
@@ -17,6 +20,19 @@ public class JDBC {
         catch (SQLException e){
             return null;
         }
+    }
+
+    public static boolean existsKey(Connection con, String table, String columnName, String key) throws BDFailedConnection{
+        PreparedStatement ps = JDBC.codLine(con, "SELECT * FROM " + table + " WHERE " + columnName + "='" + key + "'"); // ver se é "... 'id'=" e na de baixo também
+        if (ps != null) {
+            try {
+                ResultSet rs = ps.executeQuery();
+                return rs.next();
+            } catch (SQLException ignored) {
+                throw new BDFailedConnection();
+            }
+        }
+        else throw new BDFailedConnection();
     }
 
     public static java.sql.Date getDateSql(int ano, int mes, int dia){
@@ -41,5 +57,4 @@ public class JDBC {
 
         return new Tables(new AvaliacaoDAO(con), new ClienteDAO(con), new ComidaDAO(con), new RestauranteDAO(con));
     }
-
 }
