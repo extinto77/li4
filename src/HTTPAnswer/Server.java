@@ -3,10 +3,7 @@ package HTTPAnswer;
 import DataBase.Cliente;
 import DataBase.JDBC;
 import DataBase.Tables;
-import Exceptions.AddingError;
-import Exceptions.BDFailedConnection;
-import Exceptions.InvalidFormat;
-import Exceptions.MaxSizeOvertake;
+import Exceptions.*;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
@@ -113,12 +110,26 @@ public class Server {
                     Server.sendFile("settings", h, exchange);
                 } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
                     BufferedReader bf = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-                    String[] info = divideMessage(bf);
-                    if (info[0].equals("elimina")) {
-                        // ELIMINAR CONTA
-                        redirect("/../index", "Index", 0, h, exchange, 200);
-                    } else {
-                        System.out.println(Arrays.toString(info));
+                    String[] res = divideMessage(bf);
+                    String email = URLDecoder.decode(res[5], StandardCharsets.UTF_8);
+                    try {
+                        if(res[0].equals("elimina")){
+                            if (bd.getCli().getByField(email,"email").getPassword().equals(res[6])) {
+                                bd.getCli().deleteCliente(email);
+                                redirect("/","/",0,h,exchange,200);
+                            }else {
+                                exchange.sendResponseHeaders(200,0);
+                            }
+                        }else{
+                            if (bd.getCli().getByField(email,"email").getPassword().equals(res[6])) {
+                                bd.getCli().changeInfo(res[4],res[1],email,null);
+                                redirect("/home","/home",0,h,exchange,200);
+                            }else {
+                                exchange.sendResponseHeaders(200,0);
+                            }
+                        }
+                    } catch (BDFailedConnection | NoMatch | AddingError e) {
+                        e.printStackTrace();
                     }
                 }
             });
@@ -229,13 +240,18 @@ public class Server {
         }
         String[] items;
         String[] res;
+
         if(msg.toString().startsWith("------WebKitForm")){
             res = parseForm(msg.toString());
         }else{
             items = msg.toString().split("&");
             res = new String[items.length];
+            String[] aux = new String[2];
             for (int i = 0; i < items.length; i++) {
-                res[i] = items[i].split("=")[1];
+                aux = items[i].split("=");
+                if(aux.length==2){
+                    res[i] = aux[1];
+                }
             }
         }
 

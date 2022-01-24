@@ -70,10 +70,10 @@ public class ClienteDAO {
         throw new BDFailedConnection();
     }
 
-    public Cliente changeInfo(String username, String newUsername, String nome, String email, String password)
+    public void changeInfo(String newUsername, String nome, String email, String password)
             throws BDFailedConnection, NoMatch, AddingError {
         if (newUsername == null && nome == null && email == null && password == null)
-            return null;
+            return ;
         boolean first = true;
         String command = "UPDATE cliente SET ";
         if (newUsername != null) {
@@ -86,18 +86,12 @@ public class ClienteDAO {
             command += ("nome = '" + nome + "'");
             first = false;
         }
-        if (email != null) {
-            if (!first)
-                command += " , ";
-            command += ("email = '" + email + "'");
-            first = false;
-        }
         if (password != null) {
             if (!first)
                 command += " , ";
             command += ("password = '" + password + "'");
         }
-        command += " WHERE username = '" + username + "'";
+        command += " WHERE email = '" + email + "'";
 
         PreparedStatement ps = JDBC.codLine(this.con, command); // ver se é "... 'username'=" e na de baixo também
         if (ps != null) {
@@ -106,12 +100,13 @@ public class ClienteDAO {
             } catch (SQLException e) {
                 throw new AddingError();
             }
+        }else{
+            throw new BDFailedConnection();
         }
-        throw new BDFailedConnection();
     }
 
-    public int deleteCliente(String username) throws BDFailedConnection, AddingError {
-        PreparedStatement ps = JDBC.codLine(this.con, "DELETE FROM cliente WHERE username='"+username+"'");
+    public int deleteCliente(String mail) throws BDFailedConnection, AddingError {
+        PreparedStatement ps = JDBC.codLine(this.con, "DELETE FROM cliente WHERE email='"+mail+"'");
         if(ps != null){
             try {
                 ps.executeUpdate();

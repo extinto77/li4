@@ -51,7 +51,7 @@ public class Autenticador {
         }
     }
 
-    private static String[] extractCredentials(HttpExchange exchange){
+    public static String[] extractCredentials(HttpExchange exchange){
         BufferedReader reader=new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
         try{
             StringBuilder msg = new StringBuilder();
