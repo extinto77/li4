@@ -63,8 +63,25 @@ public class RestauranteDAO {
         throw new BDFailedConnection(); //Impossível fazer ligação com a base de dados
     }
 
-    Restaurante getByIdRestaurante(String id) throws BDFailedConnection {
+    public Restaurante getByIdRestaurante(String id) throws BDFailedConnection {
         PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE id='"+id+"'"); // ver se é "... 'id'=" e na de baixo também
+        if(ps != null){
+            try {
+                ResultSet rs = ps.executeQuery();
+                if(rs.next()){
+                    return fromResultSet2Rest(rs);
+                }
+                else throw new NoMatch();
+            }
+            catch (SQLException | NoMatch e){
+                return null;
+            }
+        }
+        throw new BDFailedConnection();
+    }
+
+    public Restaurante getByNomeRestaurante(String nome) throws BDFailedConnection {
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE nome='"+nome+"'"); // ver se é "... 'id'=" e na de baixo também
         if(ps != null){
             try {
                 ResultSet rs = ps.executeQuery();
