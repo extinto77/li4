@@ -49,8 +49,8 @@ public class ClienteDAO {
         throw new BDFailedConnection(); // Impossível fazer ligação com a base de dados
     }
 
-    public Cliente getByUsername(String username) throws BDFailedConnection, NoMatch {
-        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM cliente WHERE username='"+username+"'"); // ver se é
+    public Cliente getByField(String username,String field) throws BDFailedConnection, NoMatch {
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM cliente WHERE "+field+"='"+username+"'"); // ver se é
                                                                                                            // "...
                                                                                                            // 'username'="
                                                                                                            // e na de
@@ -123,4 +123,10 @@ public class ClienteDAO {
         throw new BDFailedConnection(); // Impossível fazer ligação com a base de dados
     }
 
+    public int existsOnBD(String email, String numero, String user) throws BDFailedConnection{
+        if (JDBC.existsKey(this.con, "cliente", "username", user)) return 1;
+        if (JDBC.existsKey(this.con, "cliente", "email", email)) return 2;
+        if (JDBC.existsKey(this.con, "cliente", "telemovel", numero)) return 3;
+        else return 0;
+    }
 }

@@ -4,10 +4,13 @@ import Exceptions.AddingError;
 import Exceptions.BDFailedConnection;
 import Exceptions.InvalidFormat;
 import Exceptions.MaxSizeOvertake;
+import com.mysql.cj.conf.ConnectionUrlParser;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 
 public class JDBC {
     public static PreparedStatement codLine(Connection con, String str){
@@ -20,7 +23,7 @@ public class JDBC {
     }
 
     public static boolean existsKey(Connection con, String table, String columnName, String key) throws BDFailedConnection{
-        PreparedStatement ps = JDBC.codLine(con, "SELECT * FROM " + table + "WHERE " + columnName + "='" + key + "'"); // ver se é "... 'id'=" e na de baixo também
+        PreparedStatement ps = JDBC.codLine(con, "SELECT * FROM " + table + " WHERE " + columnName + "='" + key + "'"); // ver se é "... 'id'=" e na de baixo também
         if (ps != null) {
             try {
                 ResultSet rs = ps.executeQuery();

@@ -2,6 +2,7 @@ package DataBase;
 
 import Exceptions.*;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.*;
 
@@ -62,8 +63,25 @@ public class RestauranteDAO {
         throw new BDFailedConnection(); //Impossível fazer ligação com a base de dados
     }
 
-    Restaurante getByIdRestaurante(String id) throws BDFailedConnection {
+    public Restaurante getByIdRestaurante(String id) throws BDFailedConnection {
         PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE id='"+id+"'"); // ver se é "... 'id'=" e na de baixo também
+        if(ps != null){
+            try {
+                ResultSet rs = ps.executeQuery();
+                if(rs.next()){
+                    return fromResultSet2Rest(rs);
+                }
+                else throw new NoMatch();
+            }
+            catch (SQLException | NoMatch e){
+                return null;
+            }
+        }
+        throw new BDFailedConnection();
+    }
+
+    public Restaurante getByNomeRestaurante(String nome) throws BDFailedConnection {
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante WHERE nome='"+nome+"'"); // ver se é "... 'id'=" e na de baixo também
         if(ps != null){
             try {
                 ResultSet rs = ps.executeQuery();
@@ -176,9 +194,20 @@ public class RestauranteDAO {
         return list.get(index);
     }
 
+    public String getAllCoordenates() throws BDFailedConnection{
+        List<Restaurante> list = getAllRestaurantes();
+        String ret ="";
+        int i = 0;
+        for(Restaurante r : list){
+            ret += "pin[" + i +"] = new Microsoft.Maps.Pushpin(location("+ r.getGps()+"), {\n" +
+                    "                    title:" + r.getNome() + ";\n" ;
+            i++;
+        }
+        return ret;
+    }
+
     public Restaurante getMaisProximo(String gpsAtual) throws BDFailedConnection{
         PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante");
-
         Restaurante resFinal = null;
         double disMin = 999999999.0;
         if (ps != null) {

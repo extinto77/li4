@@ -73,21 +73,68 @@
             margin-right: auto;
             display: block;
         }
+        .popup {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .popup .popuptext {
+            opacity: 0;
+            width: 160px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -80px;
+        }
+
+        .popup .popuptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .popup .show {
+            visibility: visible;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s;
+        }
     </style>
 </head>
 
 <body>
-    <form class="borderless" method="post">
+    <form class="borderless" id="register" method="post">
         <div class="container">
             <img class="logo" src="https://i.imgur.com/teflePh.png">
-            <button type="submit">Criar conta</button>
+            <center>
+            <div class="popup" onclick="hide()">
+                <span class="popuptext" id="popup"></span>
+            </div>
+            </center>
+            <button type="submit" form="register">Criar conta</button>
+
             <div class="flex-parent">
                 <div class="flex-child">
                     <input type="text" placeholder="Nome Completo" name="nome" required 
                     oninvalid="this.setCustomValidity('Introduza o seu nome')"
                     oninput="this.setCustomValidity('')">
 
-                    <input id="num" type="number" onKeyPress="if(this.value.length==9) return false;" placeholder="Número de telemóvel" name="numero" required
+                    <input type="number" onKeyPress="if(this.value.length==9) return false;" placeholder="Número de telemóvel" name="numero" required
                            min="200000000" max="999999999"
                            oninvalid="this.setCustomValidity('Introduza o seu número de telemóvel')"
                            oninput="this.setCustomValidity('')" >
@@ -98,13 +145,14 @@
                     oninput="this.setCustomValidity('')">
                 </div>
                 <div class="flex-child">
-                    <input type="text" placeholder="Username" name="username" required 
+                    <input type="text" placeholder="Username" name="username" required
                     oninvalid="this.setCustomValidity('Introduza o seu username')"
                     oninput="this.setCustomValidity('')">
-                    
-                    <input type="email" placeholder="Email" name="email" required 
+
+                    <input type="email"  placeholder="Email" name="email" required
                     oninvalid="this.setCustomValidity('Introduza o seu email')"
                     oninput="this.setCustomValidity('')">
+
                     
                     <input type="password" placeholder="Password" name="password" required 
                     oninvalid="this.setCustomValidity('Introduza a sua palavra-passe')"
@@ -112,6 +160,47 @@
                 </div>
             </div>
         </div>
+        <script type="text/javascript" async defer>
+            var f = document.querySelector("#register");
+            f.addEventListener("submit", (e) => {
+                e.preventDefault();
+
+                fetch("/home/registo", {
+                    method: "POST",
+                    body: new FormData(document.getElementById("register")),
+                }).then(res => {
+                    debugger;
+                    if(res.status === 201) {
+                        warning("Username");
+                    } else if(res.status === 202){
+                        warning("Email");
+                    } else if(res.status === 203){
+                        warning("Número de Telemóvel");
+                    }else if (res.ok) {
+                        return Promise.resolve();
+                    }else {
+                        throw new Error("Register error");
+                    }
+                }).then(() => {
+                    window.location.href=window.location.origin;
+                },(err)=>{
+                    window.location=window.location.host;
+                }).catch((error) => {
+                    window.location=window.location.host;
+                    console.log("Error");
+                });
+            });
+        </script>
+        <script>
+            function warning(name) {
+                var popup = document.getElementById("popup");
+                popup.innerHTML = name + " inválido";
+                popup.style.opacity = "1";
+            }
+            function hide(){
+                document.getElementById("popup").style.opacity = "0";
+            }
+        </script>
     </form>
 </body>
 </html>
