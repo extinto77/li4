@@ -1,6 +1,7 @@
 package DataBase;
 
 import Exceptions.MaxSizeOvertake;
+import HTTPAnswer.Server;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -85,4 +86,10 @@ public class Avaliacao {
         if (usernameCliente.length()> MAX_SIZE) throw new MaxSizeOvertake();
         this.usernameCliente = usernameCliente;
     }
+
+    public String getHTML(){
+        return "<img src=\"https://i.imgur.com/710mXhY.png\" class=\"user_image\"> <div class=\"flex-child\"> "+
+                "<label> <b>"+usernameCliente+"</b> <p>" + Server.toHTML(texto) + "</p> </label> </div>";
+    }
+
 }

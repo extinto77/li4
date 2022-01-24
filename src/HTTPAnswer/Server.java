@@ -1,8 +1,6 @@
 package HTTPAnswer;
 
-import DataBase.Cliente;
-import DataBase.JDBC;
-import DataBase.Tables;
+import DataBase.*;
 import Exceptions.AddingError;
 import Exceptions.BDFailedConnection;
 import Exceptions.InvalidFormat;
@@ -136,6 +134,47 @@ public class Server {
                 System.out.println("7");
                 Headers h = exchange.getResponseHeaders();
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    String body=Server.HtmlText("informacao");
+
+                    String path=exchange.getRequestURI().getQuery();
+                    String id="";
+                    if(path!=null&&path.length()>0){
+                        String[]query=path.split("=");
+                        if(query[0].equals("id")&&query.length>1){
+                            id=query[1];
+                        }
+                    }
+
+                    try {
+                        Restaurante res;
+                        if(id.length()>0){
+                            res= bd.getRes().getByIdRestaurante(id);
+                            if(res!=null){
+                                body = body.replace("<h1>TITULO</h1>","<h1>"+res.getNome()+"</h1>");
+                                body = body.replace("€ - €€",String. format("%.2f", res.getPreco())+"€");
+                                body = body.replace("Lorem ipsum dolor sit amet", res.getDescricao()+"<br><br><br>");
+                                List<Avaliacao> avalicoes=bd.getAva().getAvaliacoes("idRestaurante",id);
+                                StringBuilder avals= new StringBuilder();
+                                for(Avaliacao av:avalicoes){
+                                    avals.append(av.getHTML());
+                                }
+                                body = body.replace("Aenean commodo ligula eget dolor",avals.toString());
+                            }
+                        }
+                        h.add("Content-Type", "text/html; charset=utf-8");
+                        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+                        exchange.sendResponseHeaders(200, bytes.length);
+                        OutputStream os = exchange.getResponseBody();
+                        os.write(bytes);
+                        os.flush();
+                        os.close();
+                    } catch (BDFailedConnection | InvalidFormat bdFailedConnection) {
+                        bdFailedConnection.printStackTrace();
+                    }
+
+
+
+
                     Server.sendFile("informacao", h, exchange);
                 } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
 
@@ -241,6 +280,18 @@ public class Server {
 
 
         return res;
+    }
+
+    public static String toHTML(String str) {
+        StringBuilder out = new StringBuilder();
+        for (char c: str.toCharArray()) {
+            if(!Character.isLetterOrDigit(c))
+                out.append(String.format("&#x%x;", (int) c));
+            else
+                out.append(String.format("%s", c));
+
+        }
+        return out.toString();
     }
 
     private static String[] parseForm(String msg){

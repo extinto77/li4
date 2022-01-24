@@ -125,4 +125,31 @@ public class Restaurante {
         if (id.length()> MAX_SIZE) throw new MaxSizeOvertake();
         this.id = id;
     }
+
+    public String getDescricao(){
+        String res="";
+        res+="O nosso restaurante está situado na rua: "+getRua()+" no concelho de "+getLocalidade()+".<br>"+
+                "Especializamo-nos em comida de origem "+getNacionalidade()+".<br><br>";
+        res+="Contacto:</br>&emsp;Telefone:"+getTelefone();
+        return res;
+    }
+
+    private String getNacionalidade(){
+        switch(paisOrigem.toLowerCase()){
+            case "china":
+                return "Chinesa";
+            case "italia":
+                return "Italiana";
+            case "turquia":
+                return "Turca";
+            case "japao":
+                return "Japonesa";
+            case "espanha":
+                return "Espanhola";
+            case "mexico":
+                return "Mexicana";
+            default:
+                return "";
+        }
+    }
 }

@@ -68,7 +68,7 @@ public class AvaliacaoDAO {
     }
 
     public List<Avaliacao> getAvaliacoes(String flag, String id) throws InvalidFormat, BDFailedConnection {
-        if (!(flag.equals("restaurante") || flag.equals("username"))) throw new InvalidFormat();
+        if (!(flag.equals("idRestaurante") || flag.equals("usernameCliente"))) throw new InvalidFormat();
         PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM avaliacao WHERE "+flag+"='"+id+"'");
         List<Avaliacao> list = new ArrayList<>();
         if (ps != null) {
