@@ -107,15 +107,7 @@ public class Server {
                                 Restaurante r = bd.getRes().getRandomRestaurante();
                                 id = r.getId();
                         }else if(res[0].equals("exato")){
-                                String[] r_aux = res[1].split("\\+");
-                                StringBuilder s = new StringBuilder();
-                                s.append(r_aux[0]);
-                                for(int i = 1; i < r_aux.length; i++){
-                                    s.append(" ").append(r_aux[i]);
-                                }
-                                Restaurante r = bd.getRes().getByNomeRestaurante(s.toString());
-                                if(r != null)
-                                    id = r.getId();
+                                redirect("/home/search?search="+res[1],"Search",0,h,exchange,200);
                         }else{
                             String atual = URLDecoder.decode(res[0], StandardCharsets.UTF_8);// 41.2352432|-67443.
                             //String[] coords = URLDecoder.decode(res[0], StandardCharsets.UTF_8).split("\\|");
@@ -252,7 +244,45 @@ public class Server {
                 }
             });
 
-            CookieHandler.setDefault(new CookieManager());
+            HttpContext searchContext = server.createContext("/home/info", exchange ->{
+                Headers h = exchange.getResponseHeaders();
+                if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+                    String queryURL=exchange.getRequestURI().getQuery();
+                    String keyword="";
+                    if(queryURL!=null&&queryURL.length()>0){
+                        String[]query=queryURL.split("=");
+                        if(query[0].equals("id")&&query.length>1){
+                            keyword=query[1];
+                        }
+                    }
+                    if(keyword.length()>0){
+                        try{
+                            String body=Server.HtmlText("search");
+                            List<Restaurante> restaurantes=bd.getRes().getAllRestaurantesNome(keyword);
+                            if(restaurantes.size()>0){
+                                StringBuilder builder=new StringBuilder();
+                                for(Restaurante res:restaurantes){
+                                    int stars=bd.getAva().avaliacaoRestaurante(res.getId());
+                                    builder.append(res.htmlSearch(stars));
+                                }
+                                body=body.replace("Sem resultados",builder.toString());
+                            }
+                            h.add("Content-Type", "text/html; charset=utf-8");
+                            byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+                            exchange.sendResponseHeaders(200, bytes.length);
+                            OutputStream os = exchange.getResponseBody();
+                            os.write(bytes);
+                            os.flush();
+                            os.close();
+                        } catch (BDFailedConnection e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+
+
+                    CookieHandler.setDefault(new CookieManager());
             server.start();
         } catch (SQLException | SocketException e) {
             e.printStackTrace();

@@ -171,14 +171,19 @@ public class Restaurante {
         }
     }
 
-    public String htmlSearch(){
+    private String htmlStars(int classificacao){
+        return "&#9733".repeat(classificacao)+"&#9734".repeat(5-classificacao);
+    }
+
+    public String htmlSearch(int stars){
         return  "<div class=\"option\" style=\"padding-left: 3%\">"+
+                "<a href=\"/home/info?id="+id+"\" class=\"fill-div\"></a>"+
                     "<p style=\"font-size:40px;\">"+
                         "<b>"+nome+"</b>&nbsp;"+
                         "<img src=\""+flagURL()+"\" height=\"30\" width=\"auto\">"+
                     "</p>"+
                     "<p>"+getNacionalidade()+"</p>"+
-                    "<p>ESTRELAS</p>"+
+                    "<p>"+htmlStars(stars)+"</p>"+
                 "</div>";
     }
 }

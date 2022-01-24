@@ -86,5 +86,25 @@ public class AvaliacaoDAO {
         throw new BDFailedConnection();
     }
 
+    public int avaliacaoRestaurante(String idRestaurante){
+        PreparedStatement ps = JDBC.codLine(this.con, "select * from avaliacao where idRestaurante='"+idRestaurante+"';");
+        int total = 0, num = 0;
+        if (ps != null) {
+            try {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    Avaliacao a = fromResultSet2Aval(rs);
+                    num++;
+                    assert a != null;
+                    total+=a.getClassificacao();
+                }
+            }catch (SQLException e) {
+                return 0;
+            }
+            return total/num;
+        }
+        else
+            return 0;
+    }
 
 }
