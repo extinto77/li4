@@ -75,7 +75,7 @@ public class Restaurante {
     }
 
     public String getGps() {
-        return gps;
+        return this.gps;
     }
 
     public void setGps(String gps) throws MaxSizeOvertake {
