@@ -176,29 +176,70 @@ public class RestauranteDAO {
         return list.get(index);
     }
 
+    public Restaurante getMaisProximo(String gpsAtual) throws BDFailedConnection{
+        PreparedStatement ps = JDBC.codLine(this.con, "SELECT * FROM restaurante");
 
-    public static void main(String[] args) throws InvalidFormat {
-        /*String url = "jdbc:mysql://localhost:3306/li4";
-        String user = "besta";
-        String password = "bestasmei1920";
+        Restaurante resFinal = null;
+        double disMin = 999999999.0;
+        if (ps != null) {
+            try {
+                ResultSet rs = ps.executeQuery();
+                Restaurante r;
+                while (rs.next()) {
+                    r = fromResultSet2Rest(rs);
+                    if (r != null){
+                        double dis = calculaDistancia(gpsAtual, r.getGps());
+                        if(dis<disMin) {
+                            resFinal=r;
+                            disMin=dis;
+                        }
+                    }
+                }
+            }catch (SQLException e) {
+                return null;
+            }
+            return resFinal;
+        }
+        else throw new BDFailedConnection();
+    }
 
-        try {
-            Connection con = DriverManager.getConnection(url, user, password);
-            RestauranteDAO resdao = new RestauranteDAO(con);
-            System.out.println(resdao.toNum("20,34€"));
-            System.out.println(resdao.toNum("020,34€"));
-            System.out.println(resdao.toNum("020,04€"));
-            //System.out.println(resdao.toNum("020,3€"));
-            System.out.println(resdao.toNum("020,30€"));
-            // passar este con para a controler
+    private static double getCoor(String str1, String str2){
+        double val = Integer.parseInt(str1);
+        double aux = Integer.parseInt(str2);
+        int size = str2.length();
+        double aux2 = Math.pow(10,size);
+        if (val<0) val -= aux/aux2;
+        else val += aux/aux2;
+        return val;
+    }
 
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }*/
-        String str = "1cenas";
-        System.out.println(str.matches("(.*)cenas"));
-        System.out.println(str.matches("cenas(.*)"));
-        System.out.println(str.matches("(.*)cenas(.*)"));
+    private static double calculaDistancia(String inicio, String fim){
+        // "41,529383, -8,446513";
+        double EARTH_RADIUS_KM = 6371.0;
+
+        String[] ins = inicio.split(",");
+        String[] fns = fim.split(",");
+
+        double latI = getCoor(ins[0], ins[1]);
+        double longI = getCoor(ins[2].trim(), ins[3]);
+        double latF = getCoor(fns[0], fns[1]);
+        double longF = getCoor(fns[2].trim(), fns[3]);
+
+        double ILatToRad = Math.toRadians(latI);
+        double FLatToRad = Math.toRadians(latF);
+        double deltaLongitudeInRad = Math.toRadians(longF- longI);
+
+        return Math.acos(Math.cos(ILatToRad) * Math.cos(FLatToRad)
+                * Math.cos(deltaLongitudeInRad) + Math.sin(ILatToRad)
+                * Math.sin(FLatToRad))
+                * EARTH_RADIUS_KM;
+
+    }
+
+
+    public static void main(String[] args){
+        double val = calculaDistancia("41,529383, -8,446513", "41,562053, -8,420443");
+        System.out.println(val);
     }
 
 }
