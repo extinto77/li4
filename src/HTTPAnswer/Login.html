@@ -109,14 +109,10 @@
         f.addEventListener("submit", (e) => {
           e.preventDefault();
 
-
-          var email=e.target.elements.email.value;
-          var pass=e.target.elements.password.value;
-          console.log();
           console.log();
           debugger;
-          
-          fetch("/home/login", {
+          const form = e.target;
+          fetch(form.action, {
             method: "POST",
             body: new FormData(e.target),
           }).then(res => {
@@ -134,7 +130,7 @@
             return navigator.credentials.store(c);
           }).then(() => {
             debugger;
-            var url="http://"+email+":"+pass+"@"+window.location.host+"/home";
+            var url="http://"+window.location.host+"/home";
             console.log(url);
             window.location=url;
           },(err)=>{

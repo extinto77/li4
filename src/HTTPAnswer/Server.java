@@ -95,16 +95,44 @@ public class Server {
                 System.out.println("4");
                 Headers h = exchange.getResponseHeaders();
                 if (exchange.getRequestMethod().equalsIgnoreCase("get")) {
+
+                    //StringBuilder file =
+                    // home.
+                    Server.sendFile("home", h, exchange);
+                } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
+                    BufferedReader bf = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+                    String[] res = divideMessage(bf);
                     try {
-                        String aux = bd.getRes().getAllCoordenates();
-                        //StringBuilder file =
-                       // home.
+                        String id = "";
+                        if(res[0].equals("random")){
+                                Restaurante r = bd.getRes().getRandomRestaurante();
+                                id = r.getId();
+                        }else if(res[0].equals("exato")){
+                                String[] r_aux = res[1].split("\\+");
+                                StringBuilder s = new StringBuilder();
+                                s.append(r_aux[0]);
+                                for(int i = 1; i < r_aux.length; i++){
+                                    s.append(" ").append(r_aux[i]);
+                                }
+                                Restaurante r = bd.getRes().getByNomeRestaurante(s.toString());
+                                if(r != null)
+                                    id = r.getId();
+                        }else{
+                            String atual = URLDecoder.decode(res[0], StandardCharsets.UTF_8);// 41.2352432|-67443.
+                            //String[] coords = URLDecoder.decode(res[0], StandardCharsets.UTF_8).split("\\|");
+                            Restaurante r = bd.getRes().getMaisProximo(atual);
+                            id = r.getId();
+                        }
+                        String path = "/home/info";
+                        if(!id.equals("")){
+                            path = "/home/info?id="+id;
+                        }
+
+                        redirect(path,"/home/info",0,h,exchange,200);
                     } catch (BDFailedConnection e) {
                         e.printStackTrace();
                     }
-                    Server.sendFile("home", h, exchange);
-                } else if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
-                    Server.sendFile("home", h, exchange);
+                    //redirect();
                 }
             });
 
